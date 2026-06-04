@@ -1,0 +1,58 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Container from '../components/Container.astro';
+import WaterTemperatureCalculator from '../components/WaterTemperatureCalculator';
+import RelatedResources from '../components/RelatedResources.astro';
+import FAQ from '../components/FAQ.astro';
+---
+
+<Layout 
+  title="Coffee Water Temperature Calculator" 
+  description="Find the ideal water temperature for your coffee based on brewing method and roast level. Optimize extraction for V60, AeroPress, Espresso, and more."
+>
+	<Container as="div" class="pt-16 md:pt-32 pb-16 md:pb-24">
+		<div class="grid grid-cols-1 lg:grid-cols-[1fr,600px] gap-12 lg:gap-24 items-start min-w-0">
+			<section class="min-w-0">
+				<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warning-soft text-warning-deep text-xs font-medium mb-8">
+					<span class="relative flex h-2 w-2">
+						<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-warning opacity-75"></span>
+						<span class="relative inline-flex rounded-full h-2 w-2 bg-warning"></span>
+					</span>
+					Temperature matters for extraction
+				</div>
+				<h1 class="mb-8 text-balance max-w-[15ch]">
+					Master your water temperature.
+				</h1>
+				<p class="text-xl text-body mb-12 max-w-[50ch] text-balance leading-relaxed">
+					Water temperature is a critical variable in coffee extraction. 
+          Use this calculator to find the perfect heat for your specific roast and brewing gear.
+				</p>
+        
+        <div class="space-y-8 text-body max-w-[55ch] text-lg leading-8">
+          <h2 class="text-3xl font-bold text-foreground mb-4">Why temperature is key</h2>
+          <p>
+            Hotter water extracts coffee compounds faster. For <strong>Light Roasts</strong>, high heat is necessary to break down the dense cell structure and extract complex acids. 
+          </p>
+          <p>
+            Conversely, <strong>Dark Roasts</strong> are more porous and soluble. Using boiling water on dark beans often results in over-extraction, leading to ashy or bitter flavors. Dropping the temperature helps maintain balance.
+          </p>
+        </div>
+
+        <div class="mt-24 min-w-0">
+          <FAQ 
+            title="Temperature & Extraction FAQs" 
+            ids={['water-temperature-influence-ratio', 'altitude-affect-brewing-ratio', 'light-vs-dark-roast-ratio', 'why-ratio-important']} 
+          />
+        </div>
+			</section>
+
+			<section class="bg-card border border-border rounded-2xl shadow-2xl p-8 md:p-12 sticky top-24 w-full min-w-0">
+				<WaterTemperatureCalculator client:load />
+			</section>
+		</div>
+
+    <div class="mt-20 min-w-0">
+      <RelatedResources title="Brewing Guides & Tips" />
+    </div>
+	</Container>
+</Layout>

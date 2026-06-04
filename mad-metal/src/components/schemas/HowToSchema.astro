@@ -1,0 +1,43 @@
+---
+import Schema from '../Schema.astro';
+
+interface Step {
+  name: string;
+  text: string;
+  url?: string;
+  image?: string;
+}
+
+interface Props {
+  name: string;
+  description: string;
+  image?: string;
+  totalTime?: string; // ISO 8601 duration
+  supply?: string[];
+  tool?: string[];
+  steps: Step[];
+}
+
+const { name, description, image, totalTime, supply, tool, steps } = Astro.props;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": name,
+  "description": description,
+  "image": image,
+  "totalTime": totalTime,
+  "supply": supply?.map(s => ({ "@type": "HowToSupply", "name": s })),
+  "tool": tool?.map(t => ({ "@type": "HowToTool", "name": t })),
+  "step": steps.map((step, index) => ({
+    "@type": "HowToStep",
+    "name": step.name,
+    "text": step.text,
+    "url": step.url,
+    "image": step.image,
+    "position": index + 1
+  }))
+};
+---
+
+<Schema item={schema} />

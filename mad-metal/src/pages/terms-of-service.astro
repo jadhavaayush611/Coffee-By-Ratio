@@ -1,0 +1,58 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Container from "../components/Container.astro";
+
+const title = "Terms of Service";
+const description = "Terms and conditions for using the tools and content at coffeebyratio.com.";
+---
+
+<Layout title={title} description={description}>
+  <Container as="article" class="py-24 md:py-32">
+    <div class="max-w-[70ch]">
+      <h1 class="mb-12 tracking-tight">Terms of Service</h1>
+      
+      <div class="prose prose-neutral max-w-none text-body leading-relaxed space-y-8">
+        <p class="text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-12">Last updated: {new Date().toLocaleDateString()}</p>
+
+        <h2 class="text-3xl font-bold text-foreground mt-16 mb-6 tracking-tight">1. Acceptance of Terms</h2>
+        <p class="text-lg leading-8">
+          By accessing and using coffeebyratio.com, you accept and agree to be bound by the terms and 
+          provisions of this agreement.
+        </p>
+
+        <h2 class="text-3xl font-bold text-foreground mt-16 mb-6 tracking-tight">2. Use of Tools</h2>
+        <p class="text-lg leading-8">
+          The calculators and brewing timers provided on this website are for informational and educational 
+          purposes only. While we strive for accuracy, we make no guarantees regarding the results produced by 
+          these tools.
+        </p>
+
+        <h2 class="text-3xl font-bold text-foreground mt-16 mb-6 tracking-tight">3. Intellectual Property</h2>
+        <p class="text-lg leading-8">
+          The content, layout, design, and graphics on this website are owned by coffeebyratio.com unless 
+          otherwise stated. You may not reproduce, distribute, or display any part of this site without 
+          explicit permission.
+        </p>
+
+        <h2 class="text-3xl font-bold text-foreground mt-16 mb-6 tracking-tight">4. Limitation of Liability</h2>
+        <p class="text-lg leading-8">
+          coffeebyratio.com shall not be held liable for any damages that result from the use of, or the 
+          inability to use, the materials on this site or the performance of the tools.
+        </p>
+
+        <h2 class="text-3xl font-bold text-foreground mt-16 mb-6 tracking-tight">5. Third-Party Links</h2>
+        <p class="text-lg leading-8">
+          Our site may contain links to third-party websites or services that are not owned or controlled by 
+          coffeebyratio.com. We have no control over, and assume no responsibility for, the content, privacy 
+          policies, or practices of any third-party sites.
+        </p>
+
+        <h2 class="text-3xl font-bold text-foreground mt-16 mb-6 tracking-tight">6. Governing Law</h2>
+        <p class="text-lg leading-8">
+          These terms shall be governed by and construed in accordance with the laws of the jurisdiction in 
+          which the website owner operates, without regard to its conflict of law provisions.
+        </p>
+      </div>
+    </div>
+  </Container>
+</Layout>

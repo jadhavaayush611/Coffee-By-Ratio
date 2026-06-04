@@ -1,0 +1,53 @@
+---
+import ThemeToggle from "./ThemeToggle";
+import { Menu, X, Coffee } from "lucide-react";
+import MobileMenu from "./MobileMenu";
+
+const navLinks = [
+  { href: "/guides", label: "Guides" },
+  { href: "/calculator", label: "Calculator" },
+  { href: "/temperature", label: "Temperature" },
+  { href: "/timer", label: "Timer" },
+];
+---
+
+<nav class="sticky top-0 z-50 w-full h-16 bg-card/80 backdrop-blur-md border-b border-border">
+  <div class="mx-auto w-full max-w-7xl px-6 lg:px-8 h-full flex items-center justify-between">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 font-semibold text-lg tracking-tight shrink-0 group">
+      <div class="w-8 h-8 bg-primary rounded-sm flex items-center justify-center text-on-primary transition-transform group-hover:scale-105">
+        <Coffee className="w-5 h-5" />
+      </div>
+      <span class="hidden sm:inline-block">coffeebyratio.com</span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex items-center gap-1 bg-canvas-soft-2 p-1 rounded-pill">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class="px-4 py-1.5 text-sm font-medium text-muted hover:text-foreground hover:bg-card rounded-pill transition-all"
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <!-- Desktop Actions -->
+    <div class="hidden md:flex items-center gap-3">
+      <ThemeToggle client:load />
+      <a 
+        href="/calculator" 
+        class="h-9 px-5 bg-primary text-on-primary text-sm font-medium rounded-pill flex items-center justify-center hover:opacity-90 transition-opacity shadow-sm"
+      >
+        Start Brewing
+      </a>
+    </div>
+
+    <!-- Mobile Actions (Theme Toggle + Menu) -->
+    <div class="flex md:hidden items-center gap-2">
+      <ThemeToggle client:load />
+      <MobileMenu client:load navLinks={navLinks} />
+    </div>
+  </div>
+</nav>

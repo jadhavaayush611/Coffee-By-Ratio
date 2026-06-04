@@ -1,0 +1,43 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Container from "../components/Container.astro";
+import ContactForm from "../components/ContactForm";
+
+const title = "Contact Us";
+const description = "Get in touch with the team at coffeebyratio.com for support, feedback, or collaboration.";
+---
+
+<Layout title={title} description={description}>
+  <Container as="div" class="py-24 md:py-32">
+    <div class="max-w-[70ch]">
+      <h1 class="mb-12 max-w-[15ch]">Contact Us</h1>
+      
+      <div class="prose prose-neutral max-w-none text-body leading-relaxed space-y-8 mb-16">
+        <p class="text-xl max-w-[60ch] leading-relaxed">
+          Have a question about one of our calculators? Found a bug? Or just want to talk about coffee? 
+          We're here to help and would love to hear from you.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 min-w-0 mb-20">
+        <div class="p-10 bg-card border border-border rounded-2xl shadow-lg w-full min-w-0">
+          <h2 class="text-2xl font-bold mb-4 text-foreground tracking-tight">General Inquiries</h2>
+          <p class="text-sm text-muted mb-6 max-w-[65ch]">For general questions, feedback, or just to say hello.</p>
+          <a href="mailto:coffeebyratio@gmail.com" class="text-lg text-link font-bold hover:underline">coffeebyratio@gmail.com</a>
+        </div>
+
+        <div class="p-10 bg-card border border-border rounded-2xl shadow-lg w-full min-w-0">
+          <h2 class="text-2xl font-bold mb-4 text-foreground tracking-tight">Support & Feedback</h2>
+          <p class="text-sm text-muted mb-6 max-w-[65ch]">Report an issue or suggest a new feature for our tools.</p>
+          <a href="https://github.com/jadhavaayush611/Coffee-By-Ratio" class="text-lg text-link font-bold hover:underline">GitHub Issues</a>
+        </div>
+      </div>
+
+      <div class="p-10 bg-background border border-border rounded-2xl shadow-xl w-full min-w-0">
+        <h2 class="text-3xl font-bold text-foreground mb-8 tracking-tight">Send us a Message</h2>
+        <ContactForm client:load />
+      </div>
+    </div>
+  </Container>
+</Layout>
+

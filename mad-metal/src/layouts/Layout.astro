@@ -1,0 +1,146 @@
+---
+import "../styles/global.css";
+import Navbar from "../components/Navbar.astro";
+
+interface Props {
+	title: string;
+	description?: string;
+	image?: string;
+	canonicalURL?: string;
+}
+
+const { 
+	title, 
+	description = "Coffee Ratio and Step-by-Step Brewing Timer",
+	image = "/og-image.png",
+	canonicalURL = Astro.url.href
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="CoffeeRatio" />
+		<link rel="manifest" href="/site.webmanifest" />
+		<meta name="generator" content={Astro.generator} />
+		
+		<!-- SEO -->
+		<title>{title} | coffeebyratio.com</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalURL} />
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={Astro.url.href} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={new URL(image, Astro.url)} />
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={Astro.url.href} />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content={description} />
+		<meta property="twitter:image" content={new URL(image, Astro.url)} />
+
+		<!-- AdSense -->
+		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap&font-display=swap" rel="stylesheet" />
+
+		<script is:inline>
+			const theme = (() => {
+				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+					return localStorage.getItem('theme');
+				}
+				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+					return 'dark';
+				}
+				return 'light';
+			})();
+		
+			if (theme === 'dark') {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+			window.localStorage.setItem('theme', theme);
+		</script>
+	</head>
+	<body class="min-h-screen flex flex-col w-full bg-canvas-soft text-ink font-sans antialiased transition-colors duration-300">
+		<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-on-primary focus:rounded-sm focus:font-bold focus:shadow-xl">
+			Skip to content
+		</a>
+		<Navbar />
+
+		<main id="main-content" class="flex-grow w-full relative overflow-x-hidden min-w-0">
+			<div class="absolute inset-0 mesh-gradient -z-10 h-[600px] w-full"></div>
+			<slot />
+		</main>
+
+		<footer class="w-full bg-canvas border-t border-hairline py-12 md:py-24">
+			<div class="mx-auto w-full max-w-7xl px-6 lg:px-8">
+				<div class="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-20">
+					<div class="md:col-span-1">
+						<a href="/" class="flex items-center gap-2 font-semibold text-lg tracking-tight mb-4">
+							<span class="w-6 h-6 bg-primary rounded-sm flex items-center justify-center text-on-primary text-xs font-bold">C</span>
+							coffeebyratio.com
+						</a>
+						<p class="text-sm text-mute leading-relaxed max-w-[20ch]">
+							Precision coffee brewing tools for everyone. Master your ratio, perfect your timing.
+						</p>
+					</div>
+					<div>
+						<h3 class="text-xs font-mono uppercase tracking-widest text-mute mb-4">Tools</h3>
+						<ul class="space-y-2">
+							<li><a href="/calculator" class="text-sm text-body hover:text-ink">Ratio Calculator</a></li>
+							<li><a href="/temperature" class="text-sm text-body hover:text-ink">Temperature Calculator</a></li>
+							<li><a href="/timer" class="text-sm text-body hover:text-ink">Step-by-Step Timer</a></li>
+							<li><a href="/yield" class="text-sm text-body hover:text-ink">Brew Yield Calculator</a></li>
+						</ul>
+					</div>
+					<div>
+						<h3 class="text-xs font-mono uppercase tracking-widest text-mute mb-4">Guides</h3>
+						<ul class="space-y-2">
+							<li><a href="/guides/v60-ratio-calculator" class="text-sm text-body hover:text-ink">Hario V60</a></li>
+							<li><a href="/guides/chemex-ratio-calculator" class="text-sm text-body hover:text-ink">Chemex</a></li>
+							<li><a href="/guides/aeropress-ratio-calculator" class="text-sm text-body hover:text-ink">AeroPress</a></li>
+							<li><a href="/guides/french-press-ratio-calculator" class="text-sm text-body hover:text-ink">French Press</a></li>
+							<li><a href="/guides/cold-brew-ratio-calculator" class="text-sm text-body hover:text-ink">Cold Brew</a></li>
+						</ul>
+					</div>
+					<div>
+						<h3 class="text-xs font-mono uppercase tracking-widest text-mute mb-4">Project</h3>
+						<ul class="space-y-2">
+							<li><a href="/about" class="text-sm text-body hover:text-ink">About</a></li>
+							<li><a href="/contact" class="text-sm text-body hover:text-ink">Contact</a></li>
+							<li><a href="/privacy-policy" class="text-sm text-body hover:text-ink">Privacy Policy</a></li>
+							<li><a href="/terms-of-service" class="text-sm text-body hover:text-ink">Terms of Service</a></li>
+							<li><a href="/blog" class="text-sm text-body hover:text-ink">Blog</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="mt-12 pt-8 border-t border-hairline flex flex-col md:flex-row justify-between items-center gap-4">
+					<p class="text-xs text-mute">
+						© {new Date().getFullYear()} coffeebyratio.com. Precision brewing tools.
+					</p>
+
+					<div class="flex items-center gap-6">
+						<div class="flex items-center gap-2">
+							<div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+							<span class="text-xs text-mute">System Operational</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>

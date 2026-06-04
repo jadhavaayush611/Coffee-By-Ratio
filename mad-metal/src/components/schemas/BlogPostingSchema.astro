@@ -1,0 +1,32 @@
+---
+import Schema from '../Schema.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  author: string;
+  image?: string;
+  url: string;
+}
+
+const { title, description, pubDate, updatedDate, author, image, url } = Astro.props;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": title,
+  "description": description,
+  "author": {
+    "@type": "Organization",
+    "name": author
+  },
+  "datePublished": pubDate.toISOString(),
+  ...(updatedDate && { "dateModified": updatedDate.toISOString() }),
+  ...(image && { "image": image }),
+  "url": url
+};
+---
+
+<Schema item={schema} />

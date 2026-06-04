@@ -1,0 +1,52 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Container from "../components/Container.astro";
+
+const title = "About coffeebyratio.com";
+const description = "Learn about our mission to provide precision coffee brewing tools and guides for everyone.";
+---
+
+<Layout title={title} description={description}>
+  <Container as="div" class="py-24 md:py-32">
+    <div class="max-w-[70ch]">
+      <h1 class="mb-12 max-w-[15ch]">About coffeebyratio.com</h1>
+      
+      <div class="prose prose-neutral max-w-none text-body leading-relaxed space-y-8">
+        <p class="text-xl max-w-[60ch] leading-relaxed">
+          Welcome to <strong>coffeebyratio.com</strong>, your dedicated resource for mastering the art and science of coffee brewing. 
+          We believe that a great cup of coffee isn't just about the beans—it's about the precision of the process.
+        </p>
+
+        <h2 class="text-3xl font-bold text-foreground mt-16 mb-6 tracking-tight">Our Mission</h2>
+        <p class="text-lg leading-8 max-w-[60ch]">
+          Our mission is to simplify the complexities of coffee brewing. Whether you're a seasoned barista or just starting 
+          your coffee journey, we provide the tools, calculators, and step-by-step guides you need to achieve consistency 
+          and excellence in every brew.
+        </p>
+
+        <h2 class="text-3xl font-bold text-foreground mt-16 mb-6 tracking-tight">Why Ratios Matter</h2>
+        <p class="text-lg leading-8 max-w-[60ch]">
+          The ratio of coffee to water is the most fundamental variable in brewing. It determines the strength and 
+          extraction of your coffee. At coffeebyratio.com, we take the guesswork out of the math, allowing you to 
+          focus on what matters most: the flavor.
+        </p>
+
+        <h2 class="text-3xl font-bold text-foreground mt-16 mb-6 tracking-tight">What We Offer</h2>
+        <ul class="list-disc pl-6 space-y-4 max-w-[60ch] text-lg leading-8">
+          <li><strong>Precision Calculators:</strong> Dynamic tools for V60, Chemex, AeroPress, and more.</li>
+          <li><strong>Brew Timers:</strong> Step-by-step interactive timers to guide your pours.</li>
+          <li><strong>Educational Guides:</strong> Deep dives into water temperature, grind sizes, and brewing methods.</li>
+          <li><strong>Open Source:</strong> Our tools are built with transparency and community in mind.</li>
+        </ul>
+
+        <div class="mt-20 p-10 bg-card border border-border rounded-2xl shadow-lg w-full min-w-0">
+          <h3 class="text-2xl font-bold mb-6 tracking-tight">Connect with Us</h3>
+          <p class="text-lg leading-8 max-w-[60ch]">
+            Have questions or suggestions? We'd love to hear from you. Visit our <a href="/contact" class="text-link hover:underline font-bold">Contact Page</a> 
+            to get in touch.
+          </p>
+        </div>
+      </div>
+    </div>
+  </Container>
+</Layout>

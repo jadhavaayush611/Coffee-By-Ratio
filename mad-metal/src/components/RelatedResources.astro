@@ -1,0 +1,128 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  brewMethod?: string;
+  tags?: string[];
+  excludeId?: string;
+  title?: string;
+  limit?: number;
+}
+
+const { 
+  brewMethod, 
+  tags = [], 
+  excludeId, 
+  title = "Related Resources", 
+  limit = 3 
+} = Astro.props;
+
+// Fetch all content
+const allGuides = await getCollection('guides');
+const allBlogPosts = await getCollection('blog');
+
+// Find related guides
+let relatedGuides = allGuides
+  .filter(guide => {
+    if (guide.id === excludeId) return false;
+    if (brewMethod && guide.data.brewMethod === brewMethod) return true;
+    return false;
+  });
+
+// If we don't have enough matching brew method guides, add some others
+if (relatedGuides.length < limit) {
+  const otherGuides = allGuides
+    .filter(guide => {
+      if (guide.id === excludeId) return false;
+      if (brewMethod && guide.data.brewMethod === brewMethod) return false;
+      return true;
+    })
+    .slice(0, limit - relatedGuides.length);
+  relatedGuides = [...relatedGuides, ...otherGuides];
+} else {
+  relatedGuides = relatedGuides.slice(0, limit);
+}
+
+// Find related blog posts
+const relatedBlogPosts = allBlogPosts
+  .filter(post => {
+    if (post.id === excludeId) return false;
+    // Check if any tag matches
+    const hasMatchingTag = post.data.tags.some(tag => 
+      tags.includes(tag) || (brewMethod && tag.toLowerCase() === brewMethod.toLowerCase())
+    );
+    if (hasMatchingTag) return true;
+    
+    // Check if title or description contains brewMethod
+    if (brewMethod) {
+      const searchStr = brewMethod.toLowerCase();
+      if (post.data.title.toLowerCase().includes(searchStr) || 
+          post.data.description.toLowerCase().includes(searchStr)) {
+        return true;
+      }
+    }
+    return false;
+  })
+  .slice(0, limit);
+
+// Define standard calculators
+const calculators = [
+  { title: 'Ratio Calculator', href: '/calculator', description: 'Calculate the perfect coffee-to-water ratio.' },
+  { title: 'Brew Timer', href: '/timer', description: 'Step-by-step timer for your favorite brew methods.' },
+  { title: 'Water Temp', href: '/temperature', description: 'Convert temperatures for the perfect extraction.' },
+  { title: 'Yield Calculator', href: '/yield', description: 'Estimate your final coffee volume.' },
+];
+
+// Determine which calculators to show
+// For now, always show Ratio and Timer as primary, others as secondary if space allows
+const primaryCalculators = calculators.slice(0, 2);
+
+const hasRelatedContent = relatedGuides.length > 0 || relatedBlogPosts.length > 0;
+---
+
+{ (hasRelatedContent || primaryCalculators.length > 0) && (
+  <section class="mt-24 pt-16 border-t border-border w-full min-w-0">
+    <h2 class="text-4xl md:text-5xl font-bold mb-12 tracking-tight">{title}</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-w-0">
+      {/* Dynamic Guides */}
+      {relatedGuides.map(guide => (
+        <a href={`/guides/${guide.id}`} class="group flex flex-col p-6 bg-card border border-border rounded-2xl hover:border-primary/50 hover:shadow-lg transition-all w-full min-w-0">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-primary mb-3">Brew Guide</span>
+          <h3 class="text-lg font-bold group-hover:text-primary transition-colors mb-2 truncate">{guide.data.title}</h3>
+          <p class="text-sm text-muted line-clamp-2 max-w-[65ch]">{guide.data.description}</p>
+          <span class="mt-auto pt-4 text-xs font-semibold text-primary inline-flex items-center gap-1">
+            Learn more 
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="translate-y-[0.5px] group-hover:translate-x-1 transition-transform"><path d="m9 18 6-6-6-6"/></svg>
+          </span>
+        </a>
+      ))}
+
+      {/* Dynamic Blog Posts */}
+      {relatedBlogPosts.map(post => (
+        <a href={`/blog/${post.id}`} class="group flex flex-col p-6 bg-card border border-border rounded-2xl hover:border-primary/50 hover:shadow-lg transition-all w-full min-w-0">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-primary mb-3">Blog Post</span>
+          <h3 class="text-lg font-bold group-hover:text-primary transition-colors mb-2 truncate">{post.data.title}</h3>
+          <p class="text-sm text-muted line-clamp-2 max-w-[65ch]">{post.data.description}</p>
+          <span class="mt-auto pt-4 text-xs font-semibold text-primary inline-flex items-center gap-1">
+            Read article
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="translate-y-[0.5px] group-hover:translate-x-1 transition-transform"><path d="m9 18 6-6-6-6"/></svg>
+          </span>
+        </a>
+      ))}
+
+      {/* Static Calculators */}
+      {primaryCalculators.map(calc => (
+        <a href={calc.href} class="group flex flex-col p-6 bg-primary/5 border border-primary/10 rounded-2xl hover:border-primary/30 hover:shadow-lg transition-all w-full min-w-0">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-primary mb-3">Brewing Tool</span>
+          <h3 class="text-lg font-bold group-hover:text-primary transition-colors mb-2 truncate">{calc.title}</h3>
+          <p class="text-sm text-muted line-clamp-2 max-w-[65ch]">{calc.description}</p>
+          <span class="mt-auto pt-4 text-xs font-semibold text-primary inline-flex items-center gap-1">
+            Open tool
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="translate-y-[0.5px] group-hover:translate-x-1 transition-transform"><path d="m9 18 6-6-6-6"/></svg>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+)}

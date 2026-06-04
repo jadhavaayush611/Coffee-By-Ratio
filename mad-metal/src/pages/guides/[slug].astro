@@ -1,0 +1,135 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Container from '../../components/Container.astro';
+import FAQ from '../../components/FAQ.astro';
+import HowToSchema from '../../components/schemas/HowToSchema.astro';
+import BreadcrumbSchema from '../../components/schemas/BreadcrumbSchema.astro';
+import RelatedResources from '../../components/RelatedResources.astro';
+import { guideSchemaData } from '../../data/guide-data';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map(guide => ({
+    params: { slug: guide.id },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+const { Content } = await render(guide);
+
+const extraData = guideSchemaData[guide.id];
+
+const breadcrumbs = [
+  { name: 'Home', item: 'https://coffeebyratio.com' },
+  { name: 'Guides', item: 'https://coffeebyratio.com/guides' },
+  { name: guide.data.title, item: `https://coffeebyratio.com/guides/${guide.id}` }
+];
+
+// Map brew methods to relevant FAQ slugs
+const methodFaqs: Record<string, string[]> = {
+  'v60': ['1-15-vs-1-17-pour-over', 'best-ratio-for-iced-pour-over', 'filter-type-affect-ratio', 'bloom-water-in-ratio', 'sca-standard-coffee-ratio', 'kalita-wave-ratio', 'origami-dripper-ratio'],
+  'french-press': ['french-press-ratio', '32-oz-french-press-ratio', 'cold-brew-french-press-ratio', 'filter-type-affect-ratio', 'weight-vs-volume-coffee'],
+  'aeropress': ['aeropress-ratio-best', 'inverted-aeropress-ratio', '1-10-coffee-ratio-use', 'weight-vs-volume-coffee', 'perfect-ratio-milk-drinks'],
+  'chemex': ['chemex-ratio', 'best-ratio-for-iced-pour-over', 'filter-type-affect-ratio', '1-15-vs-1-17-pour-over', 'bloom-water-in-ratio'],
+  'cold-brew': ['cold-brew-high-ratio', 'cold-brew-french-press-ratio', '1-10-coffee-ratio-use', '1-1-ratio-coffee-concentrate', 'coffee-soda-ratio'],
+  'espresso': ['standard-espresso-ratio', 'espresso-1-2-ratio-calculation', 'ristretto-vs-lungo-ratio', 'perfect-ratio-milk-drinks', 'grind-size-affect-ratio']
+};
+
+const relevantFaqs = methodFaqs[guide.data.brewMethod as string] || [];
+---
+
+<Layout title={guide.data.title} description={guide.data.description}>
+  <BreadcrumbSchema items={breadcrumbs} />
+  {extraData && (
+    <HowToSchema 
+      name={guide.data.title}
+      description={guide.data.description}
+      totalTime={extraData.totalTime}
+      supply={extraData.supply}
+      tool={extraData.tool}
+      steps={extraData.steps}
+    />
+  )}
+  <Container as="article" class="py-24">
+    <div class="mb-16 max-w-[65ch]">
+      <div class="flex items-center gap-4 mb-8">
+        <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
+          {guide.data.brewMethod}
+        </span>
+        <span class="text-muted text-sm">•</span>
+        <span class="text-muted text-sm font-medium">{guide.data.difficulty}</span>
+      </div>
+      <h1 class="mb-8 tracking-tight max-w-[15ch]">
+        {guide.data.title}
+      </h1>
+      <p class="text-xl text-body leading-relaxed mb-12 max-w-[55ch]">
+        {guide.data.description}
+      </p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 p-8 md:p-10 bg-card border border-border rounded-2xl shadow-lg w-full min-w-0">
+        <div class="flex flex-col min-w-0">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-muted mb-2">Ratio</span>
+          <span class="text-xl font-bold truncate">{guide.data.ratio}</span>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-muted mb-2">Prep Time</span>
+          <span class="text-xl font-bold truncate">{guide.data.prepTime}</span>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-muted mb-2">Brew Time</span>
+          <span class="text-xl font-bold truncate">{guide.data.brewTime}</span>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-muted mb-2">Method</span>
+          <span class="text-xl font-bold uppercase truncate">{guide.data.brewMethod}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose prose-lg max-w-[65ch] prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:opacity-80 transition-all prose-p:text-lg prose-p:leading-8">
+      <Content />
+    </div>
+
+    {relevantFaqs.length > 0 && (
+      <div class="mt-24 pt-12 border-t border-border min-w-0">
+        <FAQ title={`${guide.data.title} FAQs`} ids={relevantFaqs} />
+      </div>
+    )}
+
+    <div class="mt-24 min-w-0">
+      <RelatedResources 
+        brewMethod={guide.data.brewMethod} 
+        excludeId={guide.id} 
+        title={`Explore More ${guide.data.brewMethod.toUpperCase()} Resources`}
+      />
+    </div>
+  </Container>
+</Layout>
+
+<style is:global>
+  @reference "../../styles/global.css";
+
+  .prose h2 {
+    @apply text-3xl mt-16 mb-8;
+  }
+  .prose h3 {
+    @apply text-2xl mt-12 mb-6;
+  }
+  .prose p {
+    @apply mb-6 leading-relaxed text-body;
+  }
+  .prose ul, .prose ol {
+    @apply mb-8 pl-6 space-y-4;
+  }
+  .prose li {
+    @apply text-body;
+  }
+  .prose strong {
+    @apply text-foreground font-semibold;
+  }
+  .prose blockquote {
+    @apply border-l-4 border-primary pl-6 italic text-muted my-8;
+  }
+</style>

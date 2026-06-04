@@ -1,0 +1,32 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Container from "../components/Container.astro";
+import FAQ from "../components/FAQ.astro";
+---
+
+<Layout title="Coffee Ratio FAQs" description="Comprehensive guide with high-quality FAQs about coffee brewing ratios, measurements, and optimization.">
+  <Container as="div" class="py-24 md:py-32">
+    <header class="mb-24">
+      <h1 class="mb-8 tracking-tight max-w-[15ch]">
+        Coffee Ratio <span class="text-primary">Mastery</span> FAQs
+      </h1>
+      <p class="text-2xl text-body max-w-[60ch] leading-relaxed">
+        Everything you need to know about coffee to water ratios, extraction, and brewing the perfect cup.
+      </p>
+    </header>
+
+    <FAQ title="General Brewing Ratios" limit={10} showViewAll={false} />
+    
+    <div class="my-24 border-t border-hairline"></div>
+
+    <FAQ 
+      title="Advanced Brewing Methods" 
+      ids={['hario-switch-ratio', 'origami-dripper-ratio', 'inverted-aeropress-ratio', 'vietnamese-drip-coffee-ratio', 'turkish-coffee-ratio', 'moka-pot-ratio', 'clever-dripper-ratio']} 
+      showViewAll={false}
+    />
+    
+    <div class="my-24 border-t border-hairline"></div>
+    
+    <FAQ title="All Coffee Ratio FAQs" showViewAll={false} />
+  </Container>
+</Layout>

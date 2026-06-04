@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Container from '../../components/Container.astro';
+import { getReadingTime } from '../../utils/reading-time';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const postsWithReadingTime = await Promise.all(
+	posts.map(async (post) => {
+		return {
+			...post,
+			readingTime: getReadingTime(post.body || ''),
+		};
+	})
+);
+---
+
+<Layout 
+	title="Coffee Blog" 
+	description="Expert tips, brewing guides, and deep dives into the science of coffee ratios."
+>
+	<Container as="div" class="py-24">
+		<div class="max-w-[65ch] mb-20">
+			<h1 class="mb-8 tracking-tight max-w-[12ch]">Blog</h1>
+			<p class="text-xl text-body leading-relaxed max-w-[55ch]">
+				Everything you need to know about brewing better coffee, from ratio basics to advanced pour-over techniques.
+			</p>
+		</div>
+
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 min-w-0">
+			{postsWithReadingTime.map((post) => (
+				<a 
+					href={`/blog/${post.id}`} 
+					class="group flex flex-col p-8 bg-card border border-border rounded-2xl hover:border-primary/50 transition-all shadow-sm hover:shadow-xl w-full min-w-0"
+				>
+					<div class="flex items-center gap-3 mb-4 flex-wrap">
+						{post.data.tags.map(tag => (
+							<span class="text-[10px] font-mono uppercase tracking-widest text-muted bg-background px-2 py-1 rounded">
+								{tag}
+							</span>
+						))}
+					</div>
+					<h2 class="text-2xl font-bold mb-3 group-hover:text-primary transition-colors leading-tight">
+						{post.data.title}
+					</h2>
+					<p class="text-body text-sm mb-6 line-clamp-2 leading-relaxed max-w-[65ch]">
+						{post.data.description}
+					</p>
+					<div class="mt-auto pt-6 border-t border-border flex items-center justify-between text-xs text-muted">
+						<time datetime={post.data.pubDate.toISOString()}>
+							{post.data.pubDate.toLocaleDateString('en-US', {
+								year: 'numeric',
+								month: 'short',
+								day: 'numeric',
+							})}
+						</time>
+						<span>{post.readingTime}</span>
+					</div>
+				</a>
+			))}
+		</div>
+	</Container>
+</Layout>

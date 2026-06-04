@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Container from '../components/Container.astro';
+import FAQ from '../components/FAQ.astro';
+import RelatedResources from '../components/RelatedResources.astro';
+
+const methods = [
+  { id: 'hario-v60', name: 'Hario V60' },
+  { id: 'chemex-ratio-calculator', name: 'Chemex' },
+  { id: 'aeropress-ratio-calculator', name: 'AeroPress' },
+  { id: 'french-press-ratio-calculator', name: 'French Press' },
+];
+---
+
+<Layout title="Brewing Timers" description="Interactive timers for your favorite brewing methods.">
+  <Container as="section" class="py-24">
+    <div class="mb-16 max-w-[65ch]">
+      <h1 class="mb-8">Brewing Timers.</h1>
+      <p class="text-xl text-body max-w-[50ch] leading-relaxed">
+        Select your brewing method to start the interactive timer.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full min-w-0">
+      {methods.map((method) => (
+        <a href={`/guides/${method.id}`} class="flex items-center justify-between p-8 bg-card border border-border rounded-2xl hover:border-primary/50 hover:shadow-xl transition-all group w-full min-w-0 shadow-md">
+          <div class="flex items-center gap-6 min-w-0">
+            <div class="w-12 h-12 rounded-full bg-muted-background flex items-center justify-center text-primary shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="text-2xl font-bold truncate">{method.name}</span>
+          </div>
+          <div class="text-muted group-hover:text-primary transition-colors shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="mt-24">
+      <FAQ 
+        title="Brew Timing & Steps FAQs" 
+        ids={['bloom-water-in-ratio', 'grind-size-affect-ratio', 'why-ratio-important', 'scale-coffee-recipe']} 
+      />
+    </div>
+
+    <RelatedResources title="Brewing Guides & Tools" />
+  </Container>
+</Layout>

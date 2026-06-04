@@ -1,0 +1,28 @@
+---
+import Schema from '../Schema.astro';
+
+interface Props {
+  name: string;
+  description: string;
+  url: string;
+}
+
+const { name, description, url } = Astro.props;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": name,
+  "description": description,
+  "url": url,
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+};
+---
+
+<Schema item={schema} />
