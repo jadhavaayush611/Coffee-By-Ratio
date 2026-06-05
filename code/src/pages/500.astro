@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Container from '../components/Container.astro';
+---
+
+<Layout title="500: Internal Server Error" description="Something went wrong on our end. We're cleaning up the spilled beans.">
+  <Container class="py-32 text-center">
+    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-error/10 text-error mb-8">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+        <path d="M6 8l3 5-2 3"></path>
+        <line x1="6" y1="2" x2="6" y2="4"></line>
+        <line x1="10" y1="2" x2="10" y2="4"></line>
+        <line x1="14" y1="2" x2="14" y2="4"></line>
+      </svg>
+    </div>
+    <h1 class="text-4xl md:text-6xl font-bold mb-6 tracking-tight text-ink">Spilled beans.</h1>
+    <p class="text-xl text-body mb-12 max-w-[50ch] mx-auto leading-relaxed">
+      Oops! Something went wrong on our end. The server encountered a clogged filter or a brewing interruption. We're cleaning it up now.
+    </p>
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+      <button id="reload-button" class="px-8 py-4 bg-primary text-on-primary font-semibold rounded-2xl hover:opacity-90 transition-opacity w-full md:w-auto cursor-pointer">
+        Try Brewing Again
+      </button>
+      <a href="/" class="px-8 py-4 bg-canvas border border-hairline text-ink font-semibold rounded-2xl hover:bg-canvas-soft transition-colors w-full md:w-auto">
+        Back to Home
+      </a>
+    </div>
+  </Container>
+</Layout>
+
+<script>
+  const reloadBtn = document.getElementById('reload-button');
+  if (reloadBtn) {
+    reloadBtn.addEventListener('click', () => {
+      window.location.reload();
+    });
+  }
+</script>
