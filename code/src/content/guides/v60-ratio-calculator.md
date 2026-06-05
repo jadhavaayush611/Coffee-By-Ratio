@@ -1,6 +1,6 @@
 ---
-title: "Hario V60 Ratio Calculator & Brewing Guide"
-description: "Master the Hario V60 with our comprehensive ratio calculator and step-by-step brewing guide."
+title: "Hario V60 Pour Over Coffee Ratio Calculator"
+description: "Find the ideal pour over coffee ratio using our V60 calculator. Step-by-step instructions and water to coffee ratio guidelines for standard brews."
 brewMethod: "v60"
 ratio: "1:15 - 1:17"
 difficulty: "Intermediate"

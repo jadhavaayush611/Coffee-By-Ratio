@@ -1,6 +1,6 @@
 ---
-title: "French Press Ratio Calculator & Brewing Guide"
-description: "Master the French Press with our comprehensive ratio calculator and step-by-step brewing guide."
+title: "French Press Coffee Ratio Calculator & Brewing Guide"
+description: "Find your ideal French Press coffee ratio with our interactive calculator. Learn how many tablespoons or grams of coffee to use for a rich, delicious brew."
 brewMethod: "french-press"
 ratio: "1:12 - 1:15"
 difficulty: "Beginner"

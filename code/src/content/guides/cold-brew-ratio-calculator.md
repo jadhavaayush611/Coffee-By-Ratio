@@ -1,6 +1,6 @@
 ---
-title: "Cold Brew Ratio Calculator & Brewing Guide"
-description: "Master Cold Brew with our comprehensive ratio calculator and step-by-step brewing guide."
+title: "Cold Brew Coffee Ratio Calculator & Brewing Guide"
+description: "Use our cold brew coffee ratio calculator to brew concentrate or ready-to-drink coffee. Step-by-step ratio and steeping guidelines."
 brewMethod: "cold-brew"
 ratio: "1:4 - 1:8"
 difficulty: "Easy"

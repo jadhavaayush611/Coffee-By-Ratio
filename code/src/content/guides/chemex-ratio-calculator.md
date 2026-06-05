@@ -1,6 +1,6 @@
 ---
-title: "Chemex Ratio Calculator & Brewing Guide"
-description: "Master the Chemex with our comprehensive ratio calculator and step-by-step brewing guide."
+title: "Chemex Coffee Ratio Calculator & Pour Over Guide"
+description: "Calculate your Chemex coffee ratio with our interactive tool. Get the perfect water to coffee ratio for a clean and crisp pour over brew."
 brewMethod: "chemex"
 ratio: "1:15 - 1:17"
 difficulty: "Intermediate"

@@ -1,6 +1,6 @@
 ---
-title: "AeroPress Ratio Calculator & Brewing Guide"
-description: "Master the AeroPress with our comprehensive ratio calculator and step-by-step brewing guide."
+title: "AeroPress Coffee Ratio Calculator & Brewing Guide"
+description: "Find the best AeroPress coffee ratio for standard or inverted methods. Use our interactive calculator to brew a rich, perfectly extracted cup."
 brewMethod: "aeropress"
 ratio: "1:6 - 1:15"
 difficulty: "Easy"

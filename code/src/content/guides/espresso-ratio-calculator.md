@@ -1,6 +1,6 @@
 ---
-title: "Espresso Ratio Calculator & Brewing Guide"
-description: "Master the art of espresso with our precise ratio calculator and expert brewing guide for the perfect 1:2 shot."
+title: "Espresso Coffee Ratio Calculator & Brewing Guide"
+description: "Calculate your espresso coffee ratio for standard, ristretto, or lungo shots. Use our interactive guide to dial in the perfect 1:2 extraction."
 brewMethod: "espresso"
 ratio: "1:1.5 - 1:2.5"
 difficulty: "Advanced"

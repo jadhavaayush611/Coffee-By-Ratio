@@ -70,7 +70,10 @@ const formatBrewMethod = (method: string) => {
 };
 ---
 
-<Layout title="Coffee Ratio Calculator & Brewing Timer">
+<Layout 
+	title="Coffee Ratio Calculator | Water to Coffee Ratio Chart & Guides" 
+	description="Dial in your perfect brew with our interactive coffee ratio calculator. Get precise measurements, water to coffee ratios, and timers for French press, pour over, Chemex, and cold brew."
+>
 	<WebApplicationSchema 
 		name="Coffee Ratio Calculator" 
 		description="Precision coffee tools for engineers and enthusiasts. Dial in your brew by adjusting the ratio, coffee weight, or water volume instantly."
@@ -192,6 +195,103 @@ const formatBrewMethod = (method: string) => {
 					View all FAQ questions
 					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
 				</a>
+			</div>
+		</div>
+	</Container>
+
+	<Container as="section" class="py-24 border-t border-border">
+		<div class="max-w-4xl mx-auto min-w-0">
+			<h2 class="text-3xl md:text-4xl font-bold mb-8 tracking-tight text-foreground">
+				The Ultimate Guide to the Perfect Coffee Ratio
+			</h2>
+			<div class="prose prose-lg dark:prose-invert max-w-none text-body leading-relaxed space-y-6">
+				<p>
+					Brewing an exceptional cup of coffee is both an art and a science, and the single most critical variable in this equation is the <strong>water to coffee ratio</strong>. Simply put, the coffee ratio represents the relationship between the weight of your dry coffee grounds and the weight of the water used for extraction. While many casual drinkers rely on scoops and guesswork, coffee enthusiasts and professional baristas use a <strong>coffee ratio calculator</strong> to ensure consistency and precision. Whether you are using a standard drip machine or a manual immersion brewer, understanding how to dial in your <strong>coffee ratio</strong> is the first step toward transforming your daily caffeine routine into a gourmet experience.
+				</p>
+
+				<h3 class="text-2xl font-bold mt-12 mb-4 text-foreground tracking-tight">What is the Coffee Golden Ratio?</h3>
+				<p>
+					The Specialty Coffee Association (SCA) defines the "Golden Ratio" as 1:18, meaning 1 gram of coffee for every 18 grams of water. However, the ideal ratio is highly subjective and depends heavily on your preferred brewing method, roast profile, and taste preference. Ratios typically range from 1:12 (a strong, full-bodied immersion brew) to 1:18 (a light, clear pour-over). By adjusting this ratio, you control the strength (Total Dissolved Solids, or TDS) and extraction yield of your beverage. A lower ratio (like 1:15) results in a stronger, more concentrated cup, whereas a higher ratio (like 1:17) yields a milder, more delicate brew.
+				</p>
+
+				<h3 class="text-2xl font-bold mt-12 mb-6 text-foreground tracking-tight">Water to Coffee Ratio Chart for Common Brewing Methods</h3>
+				<div class="overflow-x-auto my-8 border border-border rounded-2xl bg-card shadow-sm">
+					<table class="min-w-full divide-y divide-border text-sm">
+						<thead class="bg-canvas-soft text-foreground font-semibold">
+							<tr>
+								<th class="px-6 py-4 text-left">Brewing Method</th>
+								<th class="px-6 py-4 text-left">Standard Coffee Ratio</th>
+								<th class="px-6 py-4 text-left">Strength / Body</th>
+								<th class="px-6 py-4 text-left">Key Characteristic</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-border text-body">
+							<tr class="hover:bg-canvas-soft-2/50 transition-colors">
+								<td class="px-6 py-4 font-semibold text-foreground">Pour Over</td>
+								<td class="px-6 py-4 font-mono">1:15 to 1:17</td>
+								<td class="px-6 py-4">Medium</td>
+								<td class="px-6 py-4">Clean, bright, high clarity</td>
+							</tr>
+							<tr class="hover:bg-canvas-soft-2/50 transition-colors">
+								<td class="px-6 py-4 font-semibold text-foreground">French Press</td>
+								<td class="px-6 py-4 font-mono">1:12 to 1:14</td>
+								<td class="px-6 py-4">Strong / Heavy</td>
+								<td class="px-6 py-4">Rich, robust, full-bodied</td>
+							</tr>
+							<tr class="hover:bg-canvas-soft-2/50 transition-colors">
+								<td class="px-6 py-4 font-semibold text-foreground">Drip Coffee</td>
+								<td class="px-6 py-4 font-mono">1:16 to 1:18</td>
+								<td class="px-6 py-4">Medium / Balanced</td>
+								<td class="px-6 py-4">Smooth, easy drinking</td>
+							</tr>
+							<tr class="hover:bg-canvas-soft-2/50 transition-colors">
+								<td class="px-6 py-4 font-semibold text-foreground">Moccamaster</td>
+								<td class="px-6 py-4 font-mono">1:16</td>
+								<td class="px-6 py-4">Medium</td>
+								<td class="px-6 py-4">Optimal SCA-certified extraction</td>
+							</tr>
+							<tr class="hover:bg-canvas-soft-2/50 transition-colors">
+								<td class="px-6 py-4 font-semibold text-foreground">Chemex</td>
+								<td class="px-6 py-4 font-mono">1:15 to 1:17</td>
+								<td class="px-6 py-4">Light / Medium</td>
+								<td class="px-6 py-4">Ultra-clean, crisp, floral</td>
+							</tr>
+							<tr class="hover:bg-canvas-soft-2/50 transition-colors">
+								<td class="px-6 py-4 font-semibold text-foreground">Cold Brew</td>
+								<td class="px-6 py-4 font-mono">1:5 (Conc.) to 1:10</td>
+								<td class="px-6 py-4">Very Strong</td>
+								<td class="px-6 py-4">Low acidity, smooth, sweet</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h3 class="text-2xl font-bold mt-12 mb-4 text-foreground tracking-tight">Deep Dive: Ratios by Brewing Method</h3>
+				<ul class="space-y-4 list-disc pl-6">
+					<li>
+						<strong>Pour Over Coffee Ratio:</strong> For manual drip methods like the Hario V60 or Kalita Wave, a <strong>pour over coffee ratio</strong> of 1:16 (e.g., 30g coffee to 480g water) is highly recommended. This ratio offers an excellent balance, allowing the origin characteristics and bright acidity of light-to-medium roast coffees to shine.
+					</li>
+					<li>
+						<strong>Chemex Coffee Ratio:</strong> Due to the proprietary thick paper filters used in a Chemex, a <strong>chemex coffee ratio</strong> of 1:15 or 1:16 is ideal. The thick filter removes all sediment and oils, so a slightly tighter ratio ensures your cup has enough body and flavor expression.
+					</li>
+					<li>
+						<strong>French Press Coffee Ratio:</strong> As an immersion brewing method, the French Press is less efficient at extraction than drip methods. Therefore, a <strong>french press coffee ratio</strong> of 1:12 to 1:14 (such as 35g of coffee to 500g of water) is preferred. This concentrated ratio highlights the rich, chocolatey, and full-bodied characteristics of the brew.
+					</li>
+					<li>
+						<strong>Drip Coffee & Moccamaster Coffee Ratio:</strong> Automated home brewers require a reliable ratio. A standard <strong>drip coffee ratio</strong> is 1:16. If you own a premium brewer like the Technivorm Moccamaster, sticking to a <strong>moccamaster coffee ratio</strong> of 1:16 (which aligns with the golden cup standard of 60 grams of coffee per liter of water) guarantees a perfectly extracted, hot carafe.
+					</li>
+					<li>
+						<strong>Cold Brew Coffee Ratio:</strong> Cold brew is prepared using cold water over an extended period (12 to 24 hours). For a cold brew concentrate that you can dilute with milk or water, use a <strong>cold brew coffee ratio</strong> of 1:5. If you prefer a ready-to-drink brew straight from the fridge, a 1:10 ratio is ideal.
+					</li>
+				</ul>
+
+				<h3 class="text-2xl font-bold mt-12 mb-4 text-foreground tracking-tight">Coffee Weight vs. Volume: French Press Coffee Ratio in Tablespoons</h3>
+				<p>
+					While using a digital scale to weigh your coffee in grams is the most accurate method, we understand that not everyone has a scale on hand. If you must measure by volume, a common question is the <strong>french press coffee ratio tablespoons</strong> conversion.
+				</p>
+				<p>
+					As a rule of thumb, one level tablespoon of ground coffee weighs approximately 5 to 7 grams. For a standard 3-cup French Press (which holds about 350ml or 12 oz of water), you will need about 25 to 29 grams of coffee. Using tablespoons, a standard <strong>french press coffee ratio tablespoons</strong> estimate would be approximately 4 to 5 level tablespoons of coffee grounds. Keep in mind that grind size and roast level heavily affect volume; dark roasts are less dense than light roasts, meaning a tablespoon of dark roast will weigh less than a tablespoon of light roast. For the ultimate consistency, we always recommend switching to a digital scale and measuring in grams.
+				</p>
 			</div>
 		</div>
 	</Container>
