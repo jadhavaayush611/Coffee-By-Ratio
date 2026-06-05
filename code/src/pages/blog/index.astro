@@ -34,7 +34,7 @@ const postsWithReadingTime = await Promise.all(
 			{postsWithReadingTime.map((post) => (
 				<a 
 					href={`/blog/${post.id}`} 
-					class="group flex flex-col p-8 bg-card border border-border rounded-2xl hover:border-primary/50 transition-all shadow-sm hover:shadow-xl w-full min-w-0"
+					class="group flex flex-col p-8 bg-card border border-border rounded-2xl hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:bg-canvas-soft-2 active:scale-[0.98] active:translate-y-0 transition-all duration-200 w-full min-w-0"
 				>
 					<div class="flex items-center gap-3 mb-4 flex-wrap">
 						{post.data.tags.map(tag => (
