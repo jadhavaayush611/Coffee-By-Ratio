@@ -299,5 +299,10 @@ export const faqs: FAQ[] = [
     slug: "best-ratio-for-iced-pour-over",
     question: "What is the ideal ratio for an iced pour-over (Flash Chill)?",
     answer: "The 'Flash Chill' method involves brewing hot coffee directly onto ice. To maintain the correct final strength, you must account for the ice in your total water weight. A common ratio is 1:15 total, with 40% of the water weight replaced by ice. For example, to make 300g of iced coffee, use 20g of coffee, 180g of hot water for brewing, and 120g of ice in the carafe. This concentrated hot brew extracts the full flavor, which is then immediately chilled and diluted to the perfect drinking strength as the ice melts."
+  },
+  {
+    slug: "ratio-for-cold-drip-coffee",
+    question: "What is the recommended ratio for cold drip coffee?",
+    answer: "Cold drip coffee (Kyoto style) typically uses a ratio of 1:10 to 1:12. Unlike immersion cold brew, it relies on water slowly dripping through a bed of coffee over 4 to 12 hours. This produces a highly concentrated, smooth, and aromatic spirit-like coffee that is less acidic and has a clean, complex body. It is usually served cold, neat, or over a large ice sphere to enjoy its nuanced flavor profile."
   }
 ];

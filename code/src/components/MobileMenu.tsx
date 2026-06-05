@@ -16,12 +16,12 @@ export default function MobileMenu({ navLinks }: MobileMenuProps) {
   // Prevent scroll when menu is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = '';
     };
   }, [isOpen]);
 
