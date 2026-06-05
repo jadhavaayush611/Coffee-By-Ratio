@@ -121,7 +121,13 @@
   }
 
   html {
-    scrollbar-gutter: stable;
+    overflow-x: hidden;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      scrollbar-gutter: stable;
+    }
   }
 
   body {
