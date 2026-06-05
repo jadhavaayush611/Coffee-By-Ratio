@@ -1,10 +1,73 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Container from '../components/Container.astro';
 import RatioCalculator from '../components/RatioCalculator';
 import WebApplicationSchema from '../components/schemas/WebApplicationSchema.astro';
 import FAQ from '../components/FAQ.astro';
 import AdSlot from '../components/AdSlot.astro';
+
+const guides = await getCollection('guides');
+const sortedGuides = guides.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const tools = [
+  {
+    title: 'Ratio Calculator',
+    subtitle: 'Dial in your coffee-to-water ratio',
+    href: '/calculator',
+    color: 'text-primary',
+    bg: 'bg-primary/10',
+    icon: 'calculator'
+  },
+  {
+    title: 'Brew Yield Calculator',
+    subtitle: 'Calculate beverage output & dose',
+    href: '/yield',
+    color: 'text-success',
+    bg: 'bg-success/10',
+    icon: 'yield'
+  },
+  {
+    title: 'Water Temperature',
+    subtitle: 'Find extraction heat for your roast',
+    href: '/temperature',
+    color: 'text-warning-deep',
+    bg: 'bg-warning-soft',
+    icon: 'temp'
+  },
+  {
+    title: 'Brewing Timers',
+    subtitle: 'Step-by-step guides with timer',
+    href: '/timer',
+    color: 'text-link',
+    bg: 'bg-link-bg-soft',
+    icon: 'timer'
+  }
+];
+
+const getStyles = (method: string) => {
+  switch (method) {
+    case 'v60': return { color: 'text-cyan', bg: 'bg-cyan/10' };
+    case 'chemex': return { color: 'text-violet', bg: 'bg-violet/10' };
+    case 'aeropress': return { color: 'text-warning-deep', bg: 'bg-warning-soft' };
+    case 'french-press': return { color: 'text-highlight-pink', bg: 'bg-highlight-pink/10' };
+    case 'cold-brew': return { color: 'text-primary', bg: 'bg-primary/10' };
+    case 'espresso': return { color: 'text-success', bg: 'bg-success/10' };
+    default: return { color: 'text-body', bg: 'bg-background' };
+  }
+};
+
+const formatBrewMethod = (method: string) => {
+  switch (method) {
+    case 'v60': return 'Hario V60';
+    case 'chemex': return 'Chemex';
+    case 'aeropress': return 'AeroPress';
+    case 'french-press': return 'French Press';
+    case 'cold-brew': return 'Cold Brew';
+    case 'espresso': return 'Espresso';
+    default: return method;
+  }
+};
 ---
 
 <Layout title="Coffee Ratio Calculator & Brewing Timer">
@@ -47,6 +110,75 @@ import AdSlot from '../components/AdSlot.astro';
 					<a href="/guides" class="block text-center px-8 py-4 bg-primary text-on-primary font-semibold rounded-2xl hover:opacity-90 transition-opacity shadow-md">
 						Start Brewing with Timer
 					</a>
+				</div>
+			</div>
+		</div>
+	</Container>
+
+	<Container as="section" class="py-24 border-t border-border">
+		<div class="w-full min-w-0">
+			<div class="mb-16">
+				<h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">Brewing Tools & Guides.</h2>
+				<p class="text-xl text-body max-w-[60ch] leading-relaxed">
+					Dial in your extraction with precision calculators and interactive step-by-step guides.
+				</p>
+			</div>
+
+			<div class="mb-16">
+				<h3 class="text-xs font-mono uppercase tracking-widest text-muted mb-6">Interactive Tools</h3>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+					{tools.map((tool) => (
+						<a href={tool.href} class="group flex items-center justify-between p-6 bg-card border border-border rounded-2xl transition-all duration-200 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:bg-canvas-soft-2 active:scale-[0.98] active:translate-y-0 w-full min-w-0">
+							<div class="flex items-center gap-4 min-w-0">
+								<div class={`w-12 h-12 rounded-xl ${tool.bg} ${tool.color} flex items-center justify-center shrink-0`}>
+									{tool.icon === 'calculator' && (
+										<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+									)}
+									{tool.icon === 'yield' && (
+										<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="14" y1="2" y2="2"/><line x1="6" x2="14" y1="12" y2="12"/></svg>
+									)}
+									{tool.icon === 'temp' && (
+										<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
+									)}
+									{tool.icon === 'timer' && (
+										<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+									)}
+								</div>
+								<div class="min-w-0">
+									<span class="block text-base font-bold text-foreground truncate">{tool.title}</span>
+									<span class="block text-xs text-muted truncate">{tool.subtitle}</span>
+								</div>
+							</div>
+							<div class="text-muted group-hover:text-primary transition-colors shrink-0 pl-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform duration-200"><path d="m9 18 6-6-6-6"/></svg>
+							</div>
+						</a>
+					))}
+				</div>
+			</div>
+
+			<div>
+				<h3 class="text-xs font-mono uppercase tracking-widest text-muted mb-6">Brewing Guides</h3>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{sortedGuides.map((guide) => {
+						const styles = getStyles(guide.data.brewMethod);
+						return (
+							<a href={`/guides/${guide.id}`} class="group flex items-center justify-between p-6 bg-card border border-border rounded-2xl transition-all duration-200 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:bg-canvas-soft-2 active:scale-[0.98] active:translate-y-0 w-full min-w-0">
+								<div class="flex items-center gap-4 min-w-0">
+									<div class={`w-12 h-12 rounded-xl ${styles.bg} ${styles.color} flex items-center justify-center shrink-0`}>
+										<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="14" y1="2" y2="2"/></svg>
+									</div>
+									<div class="min-w-0">
+										<span class="block text-base font-bold text-foreground truncate">{formatBrewMethod(guide.data.brewMethod)} Guide</span>
+										<span class="block text-xs text-muted truncate">Ratio: {guide.data.ratio}</span>
+									</div>
+								</div>
+								<div class="text-muted group-hover:text-primary transition-colors shrink-0 pl-2">
+									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform duration-200"><path d="m9 18 6-6-6-6"/></svg>
+								</div>
+							</a>
+						);
+					})}
 				</div>
 			</div>
 		</div>
