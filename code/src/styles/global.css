@@ -164,3 +164,42 @@
 .dark .mesh-gradient {
   opacity: 0.1;
 }
+
+/* Scoped Typography / Prose Styles */
+.prose h1 {
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold mt-20 mb-10 scroll-mt-24 text-foreground tracking-tight;
+}
+.prose h2 {
+  @apply text-3xl mt-16 mb-8 scroll-mt-24 text-foreground;
+}
+.prose h3 {
+  @apply text-2xl mt-12 mb-6 scroll-mt-24 text-foreground;
+}
+.prose p {
+  @apply mb-6 leading-relaxed text-body;
+}
+.prose ul {
+  @apply list-disc mb-8 pl-6 space-y-4;
+}
+.prose ol {
+  @apply list-decimal mb-8 pl-6 space-y-4;
+}
+.prose li {
+  @apply text-body;
+}
+.prose strong {
+  @apply text-foreground font-semibold;
+}
+.prose blockquote {
+  @apply border-l-4 border-primary pl-6 italic text-muted my-8;
+}
+.prose table {
+  @apply w-full border-collapse mb-8;
+}
+.prose th, .prose td {
+  @apply border border-hairline p-4 text-left;
+}
+.prose th {
+  @apply bg-canvas-soft font-bold;
+}
+

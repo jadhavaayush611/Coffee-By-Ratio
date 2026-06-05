@@ -108,28 +108,4 @@ const relevantFaqs = methodFaqs[guide.data.brewMethod as string] || [];
   </Container>
 </Layout>
 
-<style is:global>
-  @reference "../../styles/global.css";
 
-  .prose h2 {
-    @apply text-3xl mt-16 mb-8;
-  }
-  .prose h3 {
-    @apply text-2xl mt-12 mb-6;
-  }
-  .prose p {
-    @apply mb-6 leading-relaxed text-body;
-  }
-  .prose ul, .prose ol {
-    @apply mb-8 pl-6 space-y-4;
-  }
-  .prose li {
-    @apply text-body;
-  }
-  .prose strong {
-    @apply text-foreground font-semibold;
-  }
-  .prose blockquote {
-    @apply border-l-4 border-primary pl-6 italic text-muted my-8;
-  }
-</style>
