@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ContactForm = () => {
   const [result, setResult] = useState<string>("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [subject, setSubject] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const sub = params.get('subject');
+      if (sub) {
+        setSubject(sub);
+      }
+    }
+  }, []);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -76,6 +87,8 @@ const ContactForm = () => {
             id="subject" 
             name="subject" 
             required 
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
             className="w-full h-12 px-4 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" 
             placeholder="How can we help?" 
           />
