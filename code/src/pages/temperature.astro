@@ -38,18 +38,20 @@ import FAQ from '../components/FAQ.astro';
           </p>
         </div>
 
-        <div class="mt-24 min-w-0">
-          <FAQ 
-            title="Temperature & Extraction FAQs" 
-            ids={['water-temperature-influence-ratio', 'altitude-affect-brewing-ratio', 'light-vs-dark-roast-ratio', 'why-ratio-important']} 
-          />
-        </div>
 			</section>
 
 			<section class="bg-card border border-border rounded-2xl shadow-2xl p-8 md:p-12 sticky top-24 w-full min-w-0">
 				<WaterTemperatureCalculator client:load />
 			</section>
 		</div>
+
+    <div class="mt-24 min-w-0">
+      <FAQ 
+        title="Temperature & Extraction FAQs" 
+        ids={['water-temperature-influence-ratio', 'altitude-affect-brewing-ratio', 'light-vs-dark-roast-ratio', 'why-ratio-important']} 
+        centered={true}
+      />
+    </div>
 
     <div class="mt-20 min-w-0">
       <RelatedResources title="Brewing Guides & Tips" />
