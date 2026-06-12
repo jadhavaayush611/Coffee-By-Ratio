@@ -35,7 +35,7 @@ const faqSchemaItems = displayFaqs.map(faq => ({
   ]}>
     <h2 class:list={[
       "text-2xl md:text-3xl font-bold text-foreground break-words",
-      centered ? "max-w-2xl" : "max-w-[12ch]"
+      centered ? "max-w-2xl text-center mx-auto" : "max-w-[12ch]"
     ]}>{title}</h2>
     {(limit || ids) && showViewAll && (
       <a href="/faqs" class="text-sm font-medium text-link hover:underline inline-flex items-center gap-1 shrink-0">
