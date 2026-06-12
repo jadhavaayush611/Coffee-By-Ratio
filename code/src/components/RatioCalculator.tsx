@@ -60,6 +60,7 @@ export default function RatioCalculator() {
   const [water, setWater] = useState<string>('288');
   const [ratio, setRatio] = useState<string>('16');
   const [mode, setMode] = useState<Mode>('coffee-to-water');
+  const [selectedPresetName, setSelectedPresetName] = useState<string | null>('V60');
   const [isMounted, setIsMounted] = useState(false);
 
   // Load from localStorage
@@ -67,11 +68,25 @@ export default function RatioCalculator() {
     const saved = localStorage.getItem('coffee-engine-state');
     if (saved) {
       try {
-        const { coffee: c, water: w, ratio: r, mode: m } = JSON.parse(saved);
+        const { coffee: c, water: w, ratio: r, mode: m, selectedPresetName: spn } = JSON.parse(saved);
         setCoffee(c || '18');
         setWater(w || '288');
         setRatio(r || '16');
         setMode(m || 'coffee-to-water');
+        
+        if (spn) {
+          setSelectedPresetName(spn);
+        } else if (r) {
+          const numR = parseFloat(r);
+          const matches = PRESETS.filter(p => Math.abs(p.ratio - numR) < 0.1);
+          if (matches.length === 1) {
+            setSelectedPresetName(matches[0].name);
+          } else {
+            setSelectedPresetName(null);
+          }
+        } else {
+          setSelectedPresetName('V60');
+        }
       } catch (e) {
         console.error('Failed to load state', e);
       }
@@ -82,9 +97,9 @@ export default function RatioCalculator() {
   // Save to localStorage
   useEffect(() => {
     if (isMounted) {
-      localStorage.setItem('coffee-engine-state', JSON.stringify({ coffee, water, ratio, mode }));
+      localStorage.setItem('coffee-engine-state', JSON.stringify({ coffee, water, ratio, mode, selectedPresetName }));
     }
-  }, [coffee, water, ratio, mode, isMounted]);
+  }, [coffee, water, ratio, mode, selectedPresetName, isMounted]);
 
   const updateCalculations = useCallback((
     targetMode: Mode, 
@@ -136,6 +151,23 @@ export default function RatioCalculator() {
     const val = e.target.value;
     setRatio(val);
     updateCalculations(mode, coffee, water, val, 'ratio');
+
+    const numVal = parseFloat(val);
+    if (!isNaN(numVal)) {
+      const matches = PRESETS.filter(p => Math.abs(p.ratio - numVal) < 0.1);
+      if (matches.length === 1) {
+        setSelectedPresetName(matches[0].name);
+      } else if (matches.length > 1) {
+        const currentMatch = matches.find(p => p.name === selectedPresetName);
+        if (!currentMatch) {
+          setSelectedPresetName(null);
+        }
+      } else {
+        setSelectedPresetName(null);
+      }
+    } else {
+      setSelectedPresetName(null);
+    }
   };
 
   const toggleMode = () => {
@@ -144,6 +176,7 @@ export default function RatioCalculator() {
   };
 
   const applyPreset = (p: Preset) => {
+    setSelectedPresetName(p.name);
     setRatio(p.ratio.toString());
     updateCalculations(mode, coffee, water, p.ratio.toString(), 'ratio');
   };
@@ -158,7 +191,9 @@ export default function RatioCalculator() {
 
   const numRatio = parseFloat(ratio) || 0;
   const strength = getStrength(numRatio);
-  const currentPreset = PRESETS.find(p => Math.abs(p.ratio - numRatio) < 0.1);
+  const currentPreset = selectedPresetName
+    ? PRESETS.find(p => p.name === selectedPresetName && Math.abs(p.ratio - numRatio) < 0.1)
+    : undefined;
 
   return (
     <div className="space-y-8">
@@ -236,7 +271,7 @@ export default function RatioCalculator() {
               key={p.name}
               onClick={() => applyPreset(p)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all shadow-sm ${
-                Math.abs(parseFloat(ratio) - p.ratio) < 0.1
+                currentPreset?.name === p.name
                   ? 'bg-primary text-on-primary border-primary'
                   : 'bg-card text-body border-border hover:border-hairline-strong'
               }`}
@@ -278,6 +313,7 @@ export default function RatioCalculator() {
               setRatio('16');
               setWater('288');
               setMode('coffee-to-water');
+              setSelectedPresetName('V60');
             }}
             className="text-xs text-link hover:underline font-bold"
           >
