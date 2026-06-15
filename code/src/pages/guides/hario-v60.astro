@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Container from '../../components/Container.astro';
 import BrewTimer from '../../components/BrewTimer';
 
 const v60Steps = [
@@ -30,7 +31,7 @@ const v60Steps = [
 ---
 
 <Layout title="Hario V60 Guide" description="Step-by-step Hario V60 brewing guide with interactive timer and precision ratios.">
-  <div class="max-w-4xl mx-auto px-6 py-12 md:py-24">
+  <Container as="div" class="py-12 md:py-24 w-full">
     <div class="flex flex-col md:flex-row gap-12 items-start mb-16">
       <div class="flex-grow">
         <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-muted mb-6">
@@ -66,7 +67,7 @@ const v60Steps = [
     <div class="space-y-12">
       <div class="text-center mb-12">
         <h2 class="text-2xl font-bold mb-4">Interactive Brew Assistant</h2>
-        <p class="text-body max-w-lg mx-auto">
+        <p class="text-body w-full">
           Adjust your coffee weight and the timer will guide you through each pour.
         </p>
       </div>
@@ -107,5 +108,5 @@ const v60Steps = [
         </div>
       </div>
     </div>
-  </div>
+  </Container>
 </Layout>
