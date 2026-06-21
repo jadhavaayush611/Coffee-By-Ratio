@@ -7,6 +7,7 @@ import HowToSchema from '../../components/schemas/HowToSchema.astro';
 import BreadcrumbSchema from '../../components/schemas/BreadcrumbSchema.astro';
 import RelatedResources from '../../components/RelatedResources.astro';
 import { guideSchemaData } from '../../data/guide-data';
+import BrewTimer from '../../components/BrewTimer';
 
 export async function getStaticPaths() {
   const guides = await getCollection('guides');
@@ -87,6 +88,18 @@ const relevantFaqs = methodFaqs[guide.data.brewMethod as string] || [];
         </div>
       </div>
     </div>
+
+    {['v60', 'chemex', 'aeropress', 'french-press'].includes(guide.data.brewMethod) && (
+      <div class="my-16 max-w-xl mx-auto w-full">
+        <div class="text-center mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-foreground">Interactive Brew Assistant</h2>
+          <p class="text-sm text-body w-full">
+            Adjust your coffee weight and the timer will guide you through each step.
+          </p>
+        </div>
+        <BrewTimer client:load initialMethodId={guide.data.brewMethod} />
+      </div>
+    )}
 
     <div class="prose prose-lg max-w-none w-full prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:opacity-80 transition-all prose-p:text-lg prose-p:leading-8">
       <Content />

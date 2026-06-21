@@ -15,8 +15,131 @@ interface Method {
 }
 
 const BREW_METHODS: Method[] = [
-  // ... (same as before)
+  {
+    id: 'v60',
+    name: 'Hario V60',
+    steps: [
+      {
+        title: 'Bloom',
+        duration: 45,
+        description: 'Pour 50g of water. Gently stir to ensure all grounds are wet. Wait for CO2 to escape.',
+        targetWater: 50
+      },
+      {
+        title: 'First Pour',
+        duration: 60,
+        description: 'Pour water in circular motions up to 150g. Keep the stream steady.',
+        targetWater: 150
+      },
+      {
+        title: 'Second Pour',
+        duration: 45,
+        description: 'Pour remaining water up to 250g. Gently swirl the brewer for a flat bed.',
+        targetWater: 250
+      },
+      {
+        title: 'Drawdown',
+        duration: 60,
+        description: 'Let the water filter through completely. Aim for a total time of 3:00 - 3:30.',
+      }
+    ]
+  },
+  {
+    id: 'chemex',
+    name: 'Chemex',
+    steps: [
+      {
+        title: 'Bloom',
+        duration: 45,
+        description: 'Gently pour 70g of water. Wait for CO2 to escape.',
+        targetWater: 70
+      },
+      {
+        title: 'First Pour',
+        duration: 75,
+        description: 'Pour in slow, steady spirals up to 270g.',
+        targetWater: 270
+      },
+      {
+        title: 'Final Pour',
+        duration: 60,
+        description: 'Continue adding water in gentle spirals up to 500g.',
+        targetWater: 500
+      },
+      {
+        title: 'Drawdown',
+        duration: 120,
+        description: 'Allow water to filter through completely. Lift filter and discard.',
+      }
+    ]
+  },
+  {
+    id: 'aeropress',
+    name: 'AeroPress',
+    steps: [
+      {
+        title: 'Add Coffee & Water',
+        duration: 20,
+        description: 'Pour 220g of hot water (80°C - 85°C) onto the grounds.',
+        targetWater: 220
+      },
+      {
+        title: 'Stir',
+        duration: 10,
+        description: 'Stir gently for 10 seconds to ensure all grounds are saturated.',
+      },
+      {
+        title: 'Steep',
+        duration: 60,
+        description: 'Insert plunger slightly to create a vacuum seal. Wait for 1 minute.',
+      },
+      {
+        title: 'Press',
+        duration: 30,
+        description: 'Press down gently and steadily until you hear a hiss. Stop at the hiss.',
+      }
+    ]
+  },
+  {
+    id: 'french-press',
+    name: 'French Press',
+    steps: [
+      {
+        title: 'Initial Steep',
+        duration: 240,
+        description: 'Pour 450g of hot water (95°C) and let steep.',
+        targetWater: 450
+      },
+      {
+        title: 'Break Crust & Clean',
+        duration: 60,
+        description: 'Stir top layer gently, then scoop off and discard foam/chaff.',
+      },
+      {
+        title: 'Settling Phase',
+        duration: 300,
+        description: 'Place lid on, but do not plunge. Wait for grounds to settle.',
+      },
+      {
+        title: 'Plunge & Decant',
+        duration: 30,
+        description: 'Gently push plunger down. Decant immediately into cup or carafe.',
+      }
+    ]
+  }
 ];
+
+const fallbackMethod: Method = {
+  id: 'fallback',
+  name: 'Default Brew',
+  steps: [
+    {
+      title: 'Brew',
+      duration: 60,
+      description: 'Pour water and brew your coffee.',
+    }
+  ]
+};
 
 interface BrewTimerProps {
   steps?: Step[];
@@ -31,36 +154,50 @@ export default function BrewTimer({
   initialMethodId = 'v60',
   methodName
 }: BrewTimerProps) {
-  const [totalCoffee, setTotalCoffee] = useState(initialTotalCoffee);
   
   // Initialize method based on props
   const getInitialMethod = () => {
-    if (customSteps) {
+    if (customSteps && customSteps.length > 0) {
       return {
         id: 'custom',
         name: methodName || 'Custom Brew',
         steps: customSteps
       };
     }
-    return BREW_METHODS.find(m => m.id === initialMethodId) || BREW_METHODS[0];
+    const cleanId = (initialMethodId || '').toLowerCase().replace('-ratio-calculator', '').replace('hario-', '');
+    const found = BREW_METHODS.find(m => m.id === cleanId || m.id === initialMethodId);
+    if (found && found.steps && found.steps.length > 0) {
+      return found;
+    }
+    if (BREW_METHODS[0] && BREW_METHODS[0].steps && BREW_METHODS[0].steps.length > 0) {
+      return BREW_METHODS[0];
+    }
+    return fallbackMethod;
   };
 
   const [selectedMethod, setSelectedMethod] = useState<Method>(getInitialMethod());
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(selectedMethod.steps[0].duration);
-  // ... rest of state
+  
+  const initialSteps = selectedMethod?.steps || [];
+  const [timeLeft, setTimeLeft] = useState(initialSteps[0]?.duration || 60);
   const [isActive, setIsActive] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  const startTimeRef = useRef<number | null>(null);
-  const pausedTimeRef = useRef<number>(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Background-resilient state refs
+  const startTimeRef = useRef<number | null>(null); // absolute timestamp when the active period started
+  const pausedTimeRef = useRef<number>(0); // total accumulated pause duration in ms
+  const pauseStartedAtRef = useRef<number | null>(null); // timestamp when the current pause started
+  const currentStepIndexRef = useRef(0);
 
-  // Initialize audio
+  // Sync ref with state
   useEffect(() => {
-    audioRef.current = new Audio('/sounds/beep.mp3'); // Assuming beep.mp3 exists or we use a fallback
+    currentStepIndexRef.current = currentStepIndex;
+  }, [currentStepIndex]);
+
+  // Request notifications permission on load if possible
+  useEffect(() => {
     if ('Notification' in window && Notification.permission === 'granted') {
       setNotificationsEnabled(true);
     }
@@ -73,92 +210,198 @@ export default function BrewTimer({
     }
   };
 
-  const playNotification = useCallback(() => {
-    if (soundEnabled && audioRef.current) {
-      audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+  const playNotification = useCallback((nextIdx: number) => {
+    if (soundEnabled) {
+      try {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          const audioCtx = new AudioContextClass();
+          
+          // Chime 1
+          const osc1 = audioCtx.createOscillator();
+          const gain1 = audioCtx.createGain();
+          osc1.connect(gain1);
+          gain1.connect(audioCtx.destination);
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+          gain1.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+          osc1.start(audioCtx.currentTime);
+          osc1.stop(audioCtx.currentTime + 0.3);
+
+          // Chime 2
+          const osc2 = audioCtx.createOscillator();
+          const gain2 = audioCtx.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioCtx.destination);
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(1046.5, audioCtx.currentTime + 0.12); // C6
+          gain2.gain.setValueAtTime(0.1, audioCtx.currentTime + 0.12);
+          gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+          osc2.start(audioCtx.currentTime + 0.12);
+          osc2.stop(audioCtx.currentTime + 0.45);
+        }
+      } catch (e) {
+        console.warn('Audio playback failed:', e);
+      }
     }
     if (notificationsEnabled && 'Notification' in window) {
+      const steps = selectedMethod?.steps || [];
+      const nextStepTitle = steps[nextIdx]?.title || 'Enjoy!';
       new Notification('Next Brew Step!', {
-        body: `Move to: ${selectedMethod.steps[currentStepIndex + 1]?.title || 'Enjoy!'}`,
+        body: `Move to: ${nextStepTitle}`,
         icon: '/favicon.svg'
       });
     }
     if ('vibrate' in navigator) {
       navigator.vibrate([200, 100, 200]);
     }
-  }, [soundEnabled, notificationsEnabled, selectedMethod, currentStepIndex]);
+  }, [soundEnabled, notificationsEnabled, selectedMethod]);
 
-  // Main Timer Loop (Accurate when backgrounded)
-  useEffect(() => {
-    let animationFrame: number;
+  const getElapsedMs = useCallback((now: number = Date.now()) => {
+    if (startTimeRef.current === null) return 0;
+    if (isActive) {
+      return (now - startTimeRef.current) - pausedTimeRef.current;
+    } else {
+      const pauseStart = pauseStartedAtRef.current !== null ? pauseStartedAtRef.current : now;
+      return (pauseStart - startTimeRef.current) - pausedTimeRef.current;
+    }
+  }, [isActive]);
 
-    const tick = () => {
-      if (isActive && startTimeRef.current !== null) {
-        const now = Date.now();
-        const elapsed = Math.floor((now - startTimeRef.current) / 1000);
-        const newTimeLeft = Math.max(0, selectedMethod.steps[currentStepIndex].duration - elapsed);
+  const setElapsedTime = (offsetSeconds: number) => {
+    const now = Date.now();
+    startTimeRef.current = now - (offsetSeconds * 1000);
+    pausedTimeRef.current = 0;
+    if (!isActive) {
+      pauseStartedAtRef.current = now;
+    }
+  };
 
-        if (newTimeLeft !== timeLeft) {
-          setTimeLeft(newTimeLeft);
-        }
+  const updateTimerState = useCallback((now = Date.now()) => {
+    if (!isActive || startTimeRef.current === null) return;
 
-        if (newTimeLeft === 0) {
-          if (currentStepIndex < selectedMethod.steps.length - 1) {
-            playNotification();
-            const nextIdx = currentStepIndex + 1;
-            setCurrentStepIndex(nextIdx);
-            startTimeRef.current = Date.now();
-            setTimeLeft(selectedMethod.steps[nextIdx].duration);
-          } else {
-            setIsActive(false);
-            setIsFinished(true);
-            playNotification();
-          }
-        }
+    const elapsedMs = getElapsedMs(now);
+    const totalElapsedSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+
+    let elapsed = 0;
+    let nextStepIdx = 0;
+    let nextTimeLeft = 0;
+    let finished = false;
+
+    const steps = selectedMethod?.steps || [];
+    if (steps.length === 0) {
+      setCurrentStepIndex(0);
+      setTimeLeft(0);
+      setIsActive(false);
+      setIsFinished(true);
+      return;
+    }
+
+    for (let i = 0; i < steps.length; i++) {
+      const stepDuration = steps[i].duration;
+      if (totalElapsedSeconds < elapsed + stepDuration) {
+        nextStepIdx = i;
+        nextTimeLeft = (elapsed + stepDuration) - totalElapsedSeconds;
+        break;
       }
-      animationFrame = requestAnimationFrame(tick);
+      elapsed += stepDuration;
+    }
+
+    if (totalElapsedSeconds >= elapsed) {
+      nextStepIdx = steps.length - 1;
+      nextTimeLeft = 0;
+      finished = true;
+    }
+
+    // Check if we transitioned to a new step
+    if (nextStepIdx !== currentStepIndexRef.current && !finished) {
+      playNotification(nextStepIdx);
+    }
+
+    setCurrentStepIndex(nextStepIdx);
+    setTimeLeft(nextTimeLeft);
+
+    if (finished) {
+      setIsActive(false);
+      setIsFinished(true);
+      playNotification(steps.length);
+    }
+  }, [isActive, selectedMethod, getElapsedMs, playNotification]);
+
+  // Main Timer loop & visibility change listener
+  useEffect(() => {
+    if (!isActive) return;
+
+    const interval = setInterval(() => {
+      updateTimerState();
+    }, 100);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        updateTimerState();
+      }
     };
 
-    if (isActive) {
-      animationFrame = requestAnimationFrame(tick);
-    }
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    return () => cancelAnimationFrame(animationFrame);
-  }, [isActive, currentStepIndex, selectedMethod, timeLeft, playNotification]);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isActive, updateTimerState]);
 
   const toggleTimer = () => {
+    const now = Date.now();
     if (!isActive) {
-      startTimeRef.current = Date.now() - (pausedTimeRef.current * 1000);
+      if (startTimeRef.current === null) {
+        // Start from beginning
+        startTimeRef.current = now;
+        pausedTimeRef.current = 0;
+        pauseStartedAtRef.current = null;
+      } else if (pauseStartedAtRef.current !== null) {
+        // Resume
+        const pausedDuration = now - pauseStartedAtRef.current;
+        pausedTimeRef.current += pausedDuration;
+        pauseStartedAtRef.current = null;
+      }
+      setIsActive(true);
     } else {
-      pausedTimeRef.current = selectedMethod.steps[currentStepIndex].duration - timeLeft;
+      // Pause
+      pauseStartedAtRef.current = now;
+      setIsActive(false);
     }
-    setIsActive(!isActive);
   };
 
   const resetTimer = () => {
     setIsActive(false);
     setIsFinished(false);
     setCurrentStepIndex(0);
-    setTimeLeft(selectedMethod.steps[0].duration);
     startTimeRef.current = null;
     pausedTimeRef.current = 0;
+    pauseStartedAtRef.current = null;
+    const steps = selectedMethod?.steps || [];
+    setTimeLeft(steps[0]?.duration || 60);
   };
 
   const nextStep = () => {
-    if (currentStepIndex < selectedMethod.steps.length - 1) {
+    const steps = selectedMethod?.steps || [];
+    if (currentStepIndex < steps.length - 1) {
       const nextIdx = currentStepIndex + 1;
+      const offsetSeconds = steps.slice(0, nextIdx).reduce((acc, step) => acc + step.duration, 0);
+      setElapsedTime(offsetSeconds);
       setCurrentStepIndex(nextIdx);
-      setTimeLeft(selectedMethod.steps[nextIdx].duration);
-      if (isActive) startTimeRef.current = Date.now();
+      setTimeLeft(steps[nextIdx]?.duration || 60);
     }
   };
 
   const prevStep = () => {
+    const steps = selectedMethod?.steps || [];
     if (currentStepIndex > 0) {
       const prevIdx = currentStepIndex - 1;
+      const offsetSeconds = steps.slice(0, prevIdx).reduce((acc, step) => acc + step.duration, 0);
+      setElapsedTime(offsetSeconds);
       setCurrentStepIndex(prevIdx);
-      setTimeLeft(selectedMethod.steps[prevIdx].duration);
-      if (isActive) startTimeRef.current = Date.now();
+      setTimeLeft(steps[prevIdx]?.duration || 60);
     }
   };
 
@@ -168,10 +411,11 @@ export default function BrewTimer({
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const totalBrewTime = selectedMethod.steps.reduce((acc, step) => acc + step.duration, 0);
-  const remainingTotalTime = selectedMethod.steps.slice(currentStepIndex + 1).reduce((acc, step) => acc + step.duration, 0) + timeLeft;
-  const currentStep = selectedMethod.steps[currentStepIndex];
-  const progress = ((currentStep.duration - timeLeft) / currentStep.duration) * 100;
+  const steps = selectedMethod?.steps || [];
+  const totalBrewTime = steps.reduce((acc, step) => acc + step.duration, 0);
+  const remainingTotalTime = steps.slice(currentStepIndex + 1).reduce((acc, step) => acc + step.duration, 0) + timeLeft;
+  const currentStep = steps[currentStepIndex] || { title: 'Brewing', duration: 60, description: 'Enjoy your brew!' };
+  const progress = currentStep.duration > 0 ? ((currentStep.duration - timeLeft) / currentStep.duration) * 100 : 0;
 
   return (
     <div className="max-w-xl mx-auto space-y-6">
@@ -183,7 +427,14 @@ export default function BrewTimer({
               key={m.id}
               onClick={() => {
                 setSelectedMethod(m);
-                resetTimer();
+                // Reset timer for selected method directly
+                setIsActive(false);
+                setIsFinished(false);
+                setCurrentStepIndex(0);
+                startTimeRef.current = null;
+                pausedTimeRef.current = 0;
+                pauseStartedAtRef.current = null;
+                setTimeLeft(m.steps[0]?.duration || 60);
               }}
               className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border transition-all ${
                 selectedMethod.id === m.id
@@ -202,7 +453,7 @@ export default function BrewTimer({
         <div className="px-6 py-4 bg-background border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-3">
             <TimerIcon size={18} className="text-primary" aria-hidden="true" />
-            <span className="text-sm font-bold text-foreground">{selectedMethod.name}</span>
+            <span className="text-sm font-bold text-foreground">{selectedMethod?.name || 'Coffee Brew'}</span>
           </div>
           <div className="flex items-center gap-2">
             <button 
@@ -239,7 +490,7 @@ export default function BrewTimer({
             <>
               <div className="mb-8">
                 <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-2 block">
-                  Step {currentStepIndex + 1} of {selectedMethod.steps.length} • {currentStep.title}
+                  Step {currentStepIndex + 1} of {steps.length} • {currentStep.title}
                 </span>
                 <p className="text-sm text-foreground font-medium max-w-[280px] mx-auto leading-relaxed mb-2">
                   {currentStep.description}
@@ -308,7 +559,7 @@ export default function BrewTimer({
 
                 <button 
                   onClick={nextStep}
-                  disabled={currentStepIndex === selectedMethod.steps.length - 1}
+                  disabled={currentStepIndex === steps.length - 1}
                   className="p-4 rounded-2xl bg-card border border-border text-muted hover:text-foreground disabled:opacity-30 transition-all"
                   aria-label="Next step"
                 >
@@ -339,7 +590,7 @@ export default function BrewTimer({
 
       {/* Timeline Steps Preview */}
       <div className="grid grid-cols-1 gap-2">
-        {selectedMethod.steps.map((step, idx) => (
+        {steps.map((step, idx) => (
           <div 
             key={idx} 
             className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
