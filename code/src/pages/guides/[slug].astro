@@ -87,6 +87,62 @@ const relevantFaqs = methodFaqs[guide.data.brewMethod as string] || [];
           <span class="text-xl font-bold uppercase truncate">{guide.data.brewMethod}</span>
         </div>
       </div>
+
+      <!-- Tools & Interactive Features Status -->
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+        <!-- Calculator Availability -->
+        <div class="p-6 bg-card border border-border rounded-2xl flex items-start gap-4 shadow-sm hover:shadow-md transition-all">
+          <div class="p-2 rounded-lg bg-success/10 text-success shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+          </div>
+          <div class="min-w-0">
+            <span class="block text-xs font-mono uppercase tracking-widest text-muted mb-1">Calculator</span>
+            <span class="block text-sm font-semibold text-foreground">Calculator Available</span>
+            <span class="block text-xs text-body mt-1">Adjust grounds or water weight on this page, or try the <a href="/calculator" class="text-link hover:underline">Ratio Calculator</a>.</span>
+          </div>
+        </div>
+
+        <!-- Timer Availability -->
+        <div class="p-6 bg-card border border-border rounded-2xl flex items-start gap-4 shadow-sm hover:shadow-md transition-all">
+          {['v60', 'chemex', 'aeropress', 'french-press'].includes(guide.data.brewMethod) ? (
+            <>
+              <div class="p-2 rounded-lg bg-success/10 text-success shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="min-w-0">
+                <span class="block text-xs font-mono uppercase tracking-widest text-muted mb-1">Brew Timer</span>
+                <span class="block text-sm font-semibold text-foreground">Brew Timer Available</span>
+                <span class="block text-xs text-body mt-1">Interactive step-by-step assistant with audio alerts is enabled below.</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div class="p-2 rounded-lg bg-muted-background text-muted shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg>
+              </div>
+              <div class="min-w-0">
+                <span class="block text-xs font-mono uppercase tracking-widest text-muted mb-1">Brew Timer</span>
+                <span class="block text-sm font-semibold text-muted">Not Applicable</span>
+                <span class="block text-xs text-body mt-1">This immersion style does not require a dynamic step-by-step timer.</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        <!-- Related Brewing Tools -->
+        <div class="p-6 bg-card border border-border rounded-2xl flex items-start gap-4 shadow-sm hover:shadow-md transition-all">
+          <div class="p-2 rounded-lg bg-warning-soft text-warning-deep shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="min-w-0">
+            <span class="block text-xs font-mono uppercase tracking-widest text-muted mb-1">Required Tools</span>
+            <span class="block text-sm font-semibold text-foreground truncate">
+              {extraData ? extraData.tool.slice(0, 3).join(', ') + (extraData.tool.length > 3 ? '...' : '') : 'Scale, Grinder, Kettle'}
+            </span>
+            <span class="block text-xs text-body mt-1">Equipment needed: {extraData ? extraData.tool.join(', ') : 'Standard brewing gear'}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     {['v60', 'chemex', 'aeropress', 'french-press'].includes(guide.data.brewMethod) && (

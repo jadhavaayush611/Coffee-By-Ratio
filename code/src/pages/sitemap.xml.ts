@@ -18,7 +18,7 @@ export async function GET() {
     '/temperature',
     '/terms-of-service',
     '/timer',
-    '/yield',
+    '/brew-yield',
     '/blog',
     '/guides',
     '/guides/hario-v60',
@@ -40,7 +40,7 @@ export async function GET() {
       } else if (
         route.includes('/calculator') || 
         route.includes('/timer') || 
-        route.includes('/yield') || 
+        route.includes('/brew-yield') || 
         route.includes('/temperature')
       ) {
         priority = '0.9';

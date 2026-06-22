@@ -22,7 +22,7 @@ const tools = [
   {
     title: 'Brew Yield Calculator',
     subtitle: 'Calculate beverage output & dose',
-    href: '/yield',
+    href: '/brew-yield',
     color: 'text-success',
     bg: 'bg-success/10',
     icon: 'yield'
@@ -98,7 +98,7 @@ const formatBrewMethod = (method: string) => {
 					Dial in your brew by adjusting the ratio, coffee weight, or water volume instantly.
 				</p>
 				<div class="hidden lg:flex items-center gap-4">
-					<a href="/guides" class="px-10 py-4 bg-primary text-on-primary font-semibold rounded-2xl hover:opacity-90 transition-opacity shadow-md">
+					<a href="/timer" class="px-10 py-4 bg-primary text-on-primary font-semibold rounded-2xl hover:opacity-90 transition-opacity shadow-md">
 						Explore Timers
 					</a>
 					<a href="/guides" class="px-10 py-4 bg-card border border-border text-foreground font-semibold rounded-2xl hover:bg-background transition-colors text-base shadow-sm">
@@ -110,7 +110,7 @@ const formatBrewMethod = (method: string) => {
 			<div class="bg-card border border-border rounded-2xl shadow-2xl p-8 md:p-12 w-full min-w-0">
 				<RatioCalculator client:load />
 				<div class="mt-8 pt-8 border-t border-border lg:hidden">
-					<a href="/guides" class="block text-center px-8 py-4 bg-primary text-on-primary font-semibold rounded-2xl hover:opacity-90 transition-opacity shadow-md">
+					<a href="/timer" class="block text-center px-8 py-4 bg-primary text-on-primary font-semibold rounded-2xl hover:opacity-90 transition-opacity shadow-md">
 						Start Brewing with Timer
 					</a>
 				</div>

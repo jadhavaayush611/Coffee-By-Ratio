@@ -37,5 +37,11 @@ Thumbs.db
 # Cache
 .cache/
 
-.agents
-.gemini
+# Agent and AI config files
+.agents/
+.gemini/
+/skills-lock.json
+
+# Root configuration/design notes (specific to project maintenance)
+/package.json
+/DESIGN.md

@@ -22,11 +22,11 @@ Over the decades, the design was refined further. In the 1950s, Faliero Bondanin
 
 ## The Soul of the Brew: Body, Simplicity, and Science
 
-What sets the French Press apart from pour-over methods like the [Hario V60](/v60-ratio-calculator) or [Chemex](/chemex-ratio-calculator) is the lack of a paper filter. In a pour-over, the paper captures many of the coffee's natural oils and fine particles (fines). While this results in a "clean" cup with high clarity, it also strips away some of the weight and complexity that many coffee lovers crave.
+What sets the French Press apart from pour-over methods like the [Hario V60](/guides/v60-ratio-calculator) or [Chemex](/guides/chemex-ratio-calculator) is the lack of a paper filter. In a pour-over, the paper captures many of the coffee's natural oils and fine particles (fines). While this results in a "clean" cup with high clarity, it also strips away some of the weight and complexity that many coffee lovers crave.
 
 The French Press uses a stainless steel mesh filter, which allows those oils and a small amount of "micro-sediment" to pass through into your cup. These oils, specifically diterpenes like cafestol and kahweol, are responsible for the rich, velvety mouthfeel that lingers on the palate. It is the "red wine" of the coffee world—robust, bold, and unapologetic.
 
-Beyond the flavor, there is the simplicity. The French Press is incredibly forgiving. Unlike a [V60](/v60-ratio-calculator), where a slightly uneven pour can lead to "channeling" and a sour cup, the French Press ensures that every coffee particle is submerged in water for the same amount of time. This leads to a very even extraction. It is a meditative ritual; there is something deeply satisfying about the tactile experience of pressing the plunger down through the water, signaling that your morning coffee is ready.
+Beyond the flavor, there is the simplicity. The French Press is incredibly forgiving. Unlike a [V60](/guides/v60-ratio-calculator), where a slightly uneven pour can lead to "channeling" and a sour cup, the French Press ensures that every coffee particle is submerged in water for the same amount of time. This leads to a very even extraction. It is a meditative ritual; there is something deeply satisfying about the tactile experience of pressing the plunger down through the water, signaling that your morning coffee is ready.
 
 ## Equipment You Will Need
 
@@ -107,13 +107,13 @@ A: Bitterness is usually a sign of over-extraction. This can be caused by a grin
 A: Yes! It’s actually an excellent way to brew loose-leaf tea. The large carafe allows the leaves plenty of room to expand and release their flavor. Just make sure you have a dedicated press for tea, as coffee oils are very hard to remove from the plastic parts and can taint your tea.
 
 **Q: Is French Press coffee high in cholesterol?**
-A: The metal filter allows cafestol and kahweol into the cup, which are substances that can raise LDL cholesterol levels. If this is a concern for you, you can pour your French Press coffee through a paper filter before drinking, or switch to a [Chemex](/chemex-ratio-calculator).
+A: The metal filter allows cafestol and kahweol into the cup, which are substances that can raise LDL cholesterol levels. If this is a concern for you, you can pour your French Press coffee through a paper filter before drinking, or switch to a [Chemex](/guides/chemex-ratio-calculator).
 
 **Q: How do I make my coffee hotter?**
 A: Pre-heating is the key. Warm your press, your mug, and even your spoons. If you are using a glass press, consider upgrading to a double-walled stainless steel model, which has much better heat retention.
 
 **Q: Can I make Cold Brew in a French Press?**
-A: Absolutely. It is one of the easiest ways to make it. Use a 1:5 ratio, room temperature water, and let it sit for 12-24 hours. Check out our [Cold Brew Ratio Calculator](/cold-brew-ratio-calculator) for a detailed recipe.
+A: Absolutely. It is one of the easiest ways to make it. Use a 1:5 ratio, room temperature water, and let it sit for 12-24 hours. Check out our [Cold Brew Ratio Calculator](/guides/cold-brew-ratio-calculator) for a detailed recipe.
 
 ## Conclusion and Internal Links
 

@@ -211,7 +211,7 @@ export default function BrewTimer({
   };
 
   const playNotification = useCallback((nextIdx: number) => {
-    if (soundEnabled) {
+    const playSyntheticChime = () => {
       try {
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContextClass) {
@@ -242,7 +242,20 @@ export default function BrewTimer({
           osc2.stop(audioCtx.currentTime + 0.45);
         }
       } catch (e) {
-        console.warn('Audio playback failed:', e);
+        console.warn('Synthetic audio synthesis failed:', e);
+      }
+    };
+
+    if (soundEnabled) {
+      try {
+        const audio = new Audio('/sounds/beep.mp3');
+        audio.play().catch(err => {
+          console.warn('Audio.play failed, falling back to synthesizer:', err);
+          playSyntheticChime();
+        });
+      } catch (e) {
+        console.warn('Audio initialization failed, falling back to synthesizer:', e);
+        playSyntheticChime();
       }
     }
     if (notificationsEnabled && 'Notification' in window) {
@@ -434,7 +447,7 @@ export default function BrewTimer({
                 startTimeRef.current = null;
                 pausedTimeRef.current = 0;
                 pauseStartedAtRef.current = null;
-                setTimeLeft(m.steps[0]?.duration || 60);
+                setTimeLeft(m.steps?.[0]?.duration || 60);
               }}
               className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border transition-all ${
                 selectedMethod.id === m.id
@@ -582,7 +595,7 @@ export default function BrewTimer({
           <div className="absolute bottom-0 left-0 w-full h-1 bg-muted-background">
             <div 
               className="h-full bg-primary/30 transition-all duration-1000"
-              style={{ width: `${((totalBrewTime - remainingTotalTime) / totalBrewTime) * 100}%` }}
+              style={{ width: `${totalBrewTime > 0 ? ((totalBrewTime - remainingTotalTime) / totalBrewTime) * 100 : 0}%` }}
             />
           </div>
         )}

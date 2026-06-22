@@ -1,9 +1,0 @@
-{
-  "name": "coffeebyratio-root",
-  "private": true,
-  "scripts": {
-    "dev": "npm --prefix code run dev",
-    "build": "npm --prefix code run build",
-    "deploy": "npm --prefix code run deploy"
-  }
-}
