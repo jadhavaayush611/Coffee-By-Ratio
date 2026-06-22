@@ -106,14 +106,13 @@ const v60Steps = [
     </div>
 
     <div class="space-y-12">
-      <div class="text-center mb-12">
-        <h2 class="text-2xl font-bold mb-4">Interactive Brew Assistant</h2>
-        <p class="text-body w-full">
-          Adjust your coffee weight and the timer will guide you through each pour.
-        </p>
-      </div>
-
-      <BrewTimer client:load steps={v60Steps} totalCoffee={15} />
+      <BrewTimer 
+        client:load 
+        steps={v60Steps} 
+        totalCoffee={15} 
+        title="Interactive Brew Assistant"
+        description="Adjust your coffee weight and the timer will guide you through each pour." 
+      />
 
       <div class="grid md:grid-cols-2 gap-12 mt-24">
         <div>

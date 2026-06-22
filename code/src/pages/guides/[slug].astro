@@ -146,14 +146,13 @@ const relevantFaqs = methodFaqs[guide.data.brewMethod as string] || [];
     </div>
 
     {['v60', 'chemex', 'aeropress', 'french-press'].includes(guide.data.brewMethod) && (
-      <div class="my-16 max-w-xl mx-auto w-full">
-        <div class="text-center mb-12">
-          <h2 class="text-2xl font-bold mb-4 text-foreground">Interactive Brew Assistant</h2>
-          <p class="text-sm text-body w-full">
-            Adjust your coffee weight and the timer will guide you through each step.
-          </p>
-        </div>
-        <BrewTimer client:load initialMethodId={guide.data.brewMethod} />
+      <div class="my-16 w-full max-w-6xl mx-auto">
+        <BrewTimer 
+          client:load 
+          initialMethodId={guide.data.brewMethod} 
+          title="Interactive Brew Assistant"
+          description="Adjust your coffee weight and the timer will guide you through each step."
+        />
       </div>
     )}
 
