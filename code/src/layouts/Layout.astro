@@ -15,6 +15,8 @@ const {
 	image = "/og-image.png",
 	canonicalURL = Astro.url.href
 } = Astro.props;
+
+const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-XXXXXXXXXXXXXXXX";
 ---
 
 <!doctype html>
@@ -52,7 +54,7 @@ const {
 		<meta name="twitter:image" content={new URL(image, Astro.url)} />
 
 		<!-- AdSense -->
-		<script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+		<script is:inline async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClientId}`} crossorigin="anonymous"></script>
 
 		<!-- Google tag (gtag.js) -->
 		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-6DF805LEQY"></script>

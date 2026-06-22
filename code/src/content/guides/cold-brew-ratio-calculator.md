@@ -8,7 +8,7 @@ prepTime: "10 mins"
 brewTime: "12-24 hours"
 ---
 
-# Master the Art of Cold Brew: The Ultimate Low-Acidity Brewing Guide
+## Master the Art of Cold Brew: The Ultimate Low-Acidity Brewing Guide
 
 In the specialty coffee world, cold brew stands as a testament to patience. While other methods rely on thermal energy to extract flavors, cold brew uses time. By replacing heat with a 12-to-24-hour steep, we unlock a chemical profile celebrated for its smoothness, deep chocolatey notes, and remarkably low acidity. Whether you want a refreshing summer drink or a versatile concentrate for lattes and cocktails, mastering the cold brew method is essential for any home barista. This guide explores the science of immersion brewing, the importance of the coffee-to-water ratio, and the techniques required to produce a clean, delicious concentrate.
 

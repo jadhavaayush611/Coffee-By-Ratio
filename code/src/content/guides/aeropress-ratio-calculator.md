@@ -8,7 +8,7 @@ prepTime: "2 mins"
 brewTime: "2 mins"
 ---
 
-# AeroPress Ratio Calculator & Brewing Guide: The Ultimate Versatile Brewer
+## AeroPress: The Ultimate Versatile Brewer
 
 In the world of specialty coffee, few devices have sparked as much creativity as the AeroPress. Invented in 2005 by Alan Adler—the mind behind the Aerobie flying ring—it was born from a desire to brew a single cup that was rich, smooth, and free of bitterness. Adler created a device that bridged the gap between espresso's body and pour-over's clarity, all while being nearly indestructible and small enough for a backpack.
 

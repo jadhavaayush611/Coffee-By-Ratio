@@ -9,7 +9,7 @@ interface Props {
 }
 
 const {
-  adClient = "ca-pub-XXXXXXXXXXXXXXXX", // Default or passed as prop
+  adClient = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-XXXXXXXXXXXXXXXX",
   adSlot,
   adFormat = "auto",
   fullWidthResponsive = true,

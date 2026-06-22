@@ -8,7 +8,7 @@ prepTime: "5 mins"
 brewTime: "30 secs"
 ---
 
-# Master the Espresso: The Ultimate Precision Brewing Guide
+## Master the Espresso: The Ultimate Precision Brewing Guide
 
 Espresso is often considered the "final boss" of coffee brewing. It is a method defined by intensity, pressure, and extreme precision. Unlike pour-over or immersion brewing, where water flows naturally through the coffee, espresso uses 9 bars of atmospheric pressure to force water through a tightly packed "puck" of finely ground coffee. The result is a highly concentrated, syrupy beverage topped with a golden layer of foam known as *crema*.
 

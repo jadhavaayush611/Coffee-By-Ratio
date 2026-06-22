@@ -8,7 +8,7 @@ prepTime: "5 mins"
 brewTime: "3 mins"
 ---
 
-# Master the Hario V60: The Ultimate Pour-Over Brewing Guide
+## Master the Hario V60: The Ultimate Pour-Over Brewing Guide
 
 The Hario V60 is more than just a coffee dripper; it is a cultural icon in the world of specialty coffee. Named after its 60-degree angle "V" shape, this Japanese-engineered masterpiece has become the gold standard for pour-over enthusiasts globally. Whether you are a seasoned barista or a home brewing novice, the V60 offers an unparalleled level of control over the extraction process, allowing you to highlight the delicate floral notes of an Ethiopian Yirgacheffe or the deep, chocolatey complexity of a Guatemalan Huehuetenango.
 

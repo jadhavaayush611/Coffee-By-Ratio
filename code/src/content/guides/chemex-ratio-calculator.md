@@ -8,7 +8,7 @@ prepTime: "5 mins"
 brewTime: "5 mins"
 ---
 
-# Master the Chemex: The Ultimate Guide to Clarity and Design
+## Master the Chemex: The Ultimate Guide to Clarity and Design
 
 In the pantheon of coffee brewing devices, few items command as much respect and aesthetic admiration as the Chemex Coffeemaker. An elegant marriage of laboratory science and mid-century modern design, the Chemex is more than just a carafe; it is a functional work of art that has earned a permanent place in the Museum of Modern Art (MoMA) and the hearts of specialty coffee enthusiasts worldwide. Invented in 1941 by Dr. Peter Schlumbohm, a chemist with over 300 patents, the Chemex was designed to be "the chemist’s way of making coffee." Its iconic hourglass shape, crafted from non-porous borosilicate glass and adorned with a polished wood collar and leather tie, is a testament to the Bauhaus philosophy: form follows function.
 
