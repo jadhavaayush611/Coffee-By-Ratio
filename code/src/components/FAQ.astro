@@ -1,8 +1,8 @@
 ---
-import { faqs as allFaqs, type FAQ } from "../data/faqs";
+import { faqs as allFaqs } from "../data/faqs";
 import FAQSchema from "./schemas/FAQSchema.astro";
 
-interface Props {
+export interface Props {
   ids?: string[]; // Optional: only show specific FAQs by slug
   limit?: number; // Optional: limit the number of FAQs shown
   title?: string;

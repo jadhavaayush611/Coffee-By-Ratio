@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Coffee, Droplets, Scale, RefreshCw, Info, Zap, Settings2 } from 'lucide-react';
 
 interface Preset {
@@ -62,6 +62,33 @@ export default function RatioCalculator() {
   const [mode, setMode] = useState<Mode>('coffee-to-water');
   const [selectedPresetName, setSelectedPresetName] = useState<string | null>('V60');
   const [isMounted, setIsMounted] = useState(false);
+  const [errors, setErrors] = useState<{ coffee?: string; water?: string; ratio?: string }>({});
+
+  const validateField = (val: string, field: 'coffee' | 'water' | 'ratio'): string => {
+    if (!val || val.trim() === '') {
+      return 'Value is required';
+    }
+    const num = parseFloat(val);
+    if (isNaN(num)) {
+      return 'Must be a valid number';
+    }
+    if (!isFinite(num)) {
+      return 'Must be a finite number';
+    }
+    if (num <= 0) {
+      return 'Must be greater than zero';
+    }
+    if (field === 'coffee' && num < 0.1) {
+      return 'Min coffee is 0.1g';
+    }
+    if (field === 'water' && num < 0.1) {
+      return 'Min water is 0.1ml';
+    }
+    if (field === 'ratio' && num < 1) {
+      return 'Min ratio is 1 (1:1)';
+    }
+    return '';
+  };
 
   // Load from localStorage
   useEffect(() => {
@@ -69,9 +96,13 @@ export default function RatioCalculator() {
     if (saved) {
       try {
         const { coffee: c, water: w, ratio: r, mode: m, selectedPresetName: spn } = JSON.parse(saved);
-        setCoffee(c || '18');
-        setWater(w || '288');
-        setRatio(r || '16');
+        const nextCoffee = c || '18';
+        const nextWater = w || '288';
+        const nextRatio = r || '16';
+
+        setCoffee(nextCoffee);
+        setWater(nextWater);
+        setRatio(nextRatio);
         setMode(m || 'coffee-to-water');
         
         if (spn) {
@@ -87,6 +118,15 @@ export default function RatioCalculator() {
         } else {
           setSelectedPresetName('V60');
         }
+
+        const coffeeErr = validateField(nextCoffee, 'coffee');
+        const waterErr = validateField(nextWater, 'water');
+        const ratioErr = validateField(nextRatio, 'ratio');
+        const initialErrors: { coffee?: string; water?: string; ratio?: string } = {};
+        if (coffeeErr) initialErrors.coffee = coffeeErr;
+        if (waterErr) initialErrors.water = waterErr;
+        if (ratioErr) initialErrors.ratio = ratioErr;
+        setErrors(initialErrors);
       } catch (e) {
         console.error('Failed to load state', e);
       }
@@ -101,73 +141,100 @@ export default function RatioCalculator() {
     }
   }, [coffee, water, ratio, mode, selectedPresetName, isMounted]);
 
-  const updateCalculations = useCallback((
-    targetMode: Mode, 
-    c: string, 
-    w: string, 
-    r: string, 
-    trigger: 'coffee' | 'water' | 'ratio'
-  ) => {
-    const numC = parseFloat(c);
-    const numW = parseFloat(w);
-    const numR = parseFloat(r);
-
-    if (targetMode === 'coffee-to-water') {
-      if (trigger === 'coffee' || trigger === 'ratio') {
-        if (!isNaN(numC) && !isNaN(numR)) {
-          setWater((numC * numR).toFixed(1).replace(/\.0$/, ''));
-        }
-      } else if (trigger === 'water') {
-        if (!isNaN(numW) && !isNaN(numR) && numR !== 0) {
-          setCoffee((numW / numR).toFixed(1).replace(/\.0$/, ''));
-        }
-      }
-    } else {
-      if (trigger === 'water' || trigger === 'ratio') {
-        if (!isNaN(numW) && !isNaN(numR) && numR !== 0) {
-          setCoffee((numW / numR).toFixed(1).replace(/\.0$/, ''));
-        }
-      } else if (trigger === 'coffee') {
-        if (!isNaN(numC) && !isNaN(numR)) {
-          setWater((numC * numR).toFixed(1).replace(/\.0$/, ''));
-        }
-      }
-    }
-  }, []);
-
   const handleCoffeeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setCoffee(val);
-    updateCalculations(mode, val, water, ratio, 'coffee');
+    
+    const coffeeErr = validateField(val, 'coffee');
+    const ratioErr = validateField(ratio, 'ratio');
+    
+    if (coffeeErr) {
+      setErrors(prev => ({ ...prev, coffee: coffeeErr }));
+      return;
+    }
+    
+    let nextErrors = { ...errors, coffee: '' };
+    
+    if (!ratioErr) {
+      const numC = parseFloat(val);
+      const numR = parseFloat(ratio);
+      const calculatedWater = (numC * numR).toFixed(1).replace(/\.0$/, '');
+      setWater(calculatedWater);
+      nextErrors.water = validateField(calculatedWater, 'water');
+    }
+    setErrors(nextErrors);
   };
 
   const handleWaterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setWater(val);
-    updateCalculations(mode, coffee, val, ratio, 'water');
+    
+    const waterErr = validateField(val, 'water');
+    const ratioErr = validateField(ratio, 'ratio');
+    
+    if (waterErr) {
+      setErrors(prev => ({ ...prev, water: waterErr }));
+      return;
+    }
+    
+    let nextErrors = { ...errors, water: '' };
+    
+    if (!ratioErr) {
+      const numW = parseFloat(val);
+      const numR = parseFloat(ratio);
+      const calculatedCoffee = (numW / numR).toFixed(1).replace(/\.0$/, '');
+      setCoffee(calculatedCoffee);
+      nextErrors.coffee = validateField(calculatedCoffee, 'coffee');
+    }
+    setErrors(nextErrors);
   };
 
   const handleRatioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setRatio(val);
-    updateCalculations(mode, coffee, water, val, 'ratio');
-
+    
+    const ratioErr = validateField(val, 'ratio');
+    
+    // Match preset
     const numVal = parseFloat(val);
     if (!isNaN(numVal)) {
       const matches = PRESETS.filter(p => Math.abs(p.ratio - numVal) < 0.1);
       if (matches.length === 1) {
         setSelectedPresetName(matches[0].name);
-      } else if (matches.length > 1) {
-        const currentMatch = matches.find(p => p.name === selectedPresetName);
-        if (!currentMatch) {
-          setSelectedPresetName(null);
-        }
       } else {
         setSelectedPresetName(null);
       }
     } else {
       setSelectedPresetName(null);
     }
+
+    if (ratioErr) {
+      setErrors(prev => ({ ...prev, ratio: ratioErr }));
+      return;
+    }
+    
+    let nextErrors = { ...errors, ratio: '' };
+    
+    if (mode === 'coffee-to-water') {
+      const coffeeErr = validateField(coffee, 'coffee');
+      if (!coffeeErr) {
+        const numC = parseFloat(coffee);
+        const numR = parseFloat(val);
+        const calculatedWater = (numC * numR).toFixed(1).replace(/\.0$/, '');
+        setWater(calculatedWater);
+        nextErrors.water = validateField(calculatedWater, 'water');
+      }
+    } else {
+      const waterErr = validateField(water, 'water');
+      if (!waterErr) {
+        const numW = parseFloat(water);
+        const numR = parseFloat(val);
+        const calculatedCoffee = (numW / numR).toFixed(1).replace(/\.0$/, '');
+        setCoffee(calculatedCoffee);
+        nextErrors.coffee = validateField(calculatedCoffee, 'coffee');
+      }
+    }
+    setErrors(nextErrors);
   };
 
   const toggleMode = () => {
@@ -178,10 +245,33 @@ export default function RatioCalculator() {
   const applyPreset = (p: Preset) => {
     setSelectedPresetName(p.name);
     setRatio(p.ratio.toString());
-    updateCalculations(mode, coffee, water, p.ratio.toString(), 'ratio');
+    
+    let nextErrors = { ...errors, ratio: '' };
+    
+    if (mode === 'coffee-to-water') {
+      const coffeeErr = validateField(coffee, 'coffee');
+      if (!coffeeErr) {
+        const numC = parseFloat(coffee);
+        const calculatedWater = (numC * p.ratio).toFixed(1).replace(/\.0$/, '');
+        setWater(calculatedWater);
+        nextErrors.water = validateField(calculatedWater, 'water');
+      }
+    } else {
+      const waterErr = validateField(water, 'water');
+      if (!waterErr) {
+        const numW = parseFloat(water);
+        const calculatedCoffee = (numW / p.ratio).toFixed(1).replace(/\.0$/, '');
+        setCoffee(calculatedCoffee);
+        nextErrors.coffee = validateField(calculatedCoffee, 'coffee');
+      }
+    }
+    setErrors(nextErrors);
   };
 
   const getStrength = (r: number) => {
+    if (errors.ratio) {
+      return { label: 'Invalid Ratio', color: 'text-error-deep bg-error-soft border-error-soft/20' };
+    }
     if (r <= 3) return { label: 'Extra Strong', color: 'text-error-deep bg-error-soft border-error-soft/20' };
     if (r <= 9) return { label: 'Strong', color: 'text-warning-deep bg-warning-soft border-warning-soft/20' };
     if (r <= 14) return { label: 'Intense', color: 'text-warning bg-warning-soft border-warning-soft/20' };
@@ -194,6 +284,8 @@ export default function RatioCalculator() {
   const currentPreset = selectedPresetName
     ? PRESETS.find(p => p.name === selectedPresetName && Math.abs(p.ratio - numRatio) < 0.1)
     : undefined;
+
+  const hasErrors = !!(errors.coffee || errors.water || errors.ratio);
 
   return (
     <div className="space-y-8">
@@ -226,11 +318,15 @@ export default function RatioCalculator() {
               id="coffee-input"
               type="number"
               step="0.1"
+              min="0.1"
               inputMode="decimal"
               value={coffee}
               onChange={handleCoffeeChange}
-              className="w-full h-14 px-4 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold"
+              className={`w-full h-14 px-4 bg-card border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold ${
+                errors.coffee ? 'border-error focus:ring-error/20 focus:border-error' : 'border-border'
+              }`}
             />
+            {errors.coffee && <p className="text-[11px] text-error font-medium mt-1">{errors.coffee}</p>}
           </div>
           <div className="space-y-2">
             <label htmlFor="water-input" className="text-[11px] font-mono uppercase tracking-widest text-muted flex items-center gap-2">
@@ -241,11 +337,15 @@ export default function RatioCalculator() {
               id="water-input"
               type="number"
               step="1"
+              min="0.1"
               inputMode="decimal"
               value={water}
               onChange={handleWaterChange}
-              className="w-full h-14 px-4 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold"
+              className={`w-full h-14 px-4 bg-card border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold ${
+                errors.water ? 'border-error focus:ring-error/20 focus:border-error' : 'border-border'
+              }`}
             />
+            {errors.water && <p className="text-[11px] text-error font-medium mt-1">{errors.water}</p>}
           </div>
         </div>
         <div className="space-y-2">
@@ -256,11 +356,15 @@ export default function RatioCalculator() {
             id="ratio-input"
             type="number"
             step="0.1"
+            min="1"
             inputMode="decimal"
             value={ratio}
             onChange={handleRatioChange}
-            className="w-full h-14 px-4 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold"
+            className={`w-full h-14 px-4 bg-card border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold ${
+              errors.ratio ? 'border-error focus:ring-error/20 focus:border-error' : 'border-border'
+            }`}
           />
+          {errors.ratio && <p className="text-[11px] text-error font-medium mt-1">{errors.ratio}</p>}
         </div>
       </div>
 
@@ -288,7 +392,7 @@ export default function RatioCalculator() {
           <span className="text-sm font-mono font-bold">1:{ratio}</span>
         </div>
 
-        {currentPreset && (
+        {currentPreset && !hasErrors && (
           <div className="p-5 rounded-xl bg-background border border-border space-y-3 shadow-sm">
             <div className="flex items-start gap-3">
               <Info size={18} className="text-primary mt-0.5 shrink-0" />
@@ -314,6 +418,7 @@ export default function RatioCalculator() {
               setWater('288');
               setMode('coffee-to-water');
               setSelectedPresetName('V60');
+              setErrors({});
             }}
             className="text-xs text-link hover:underline font-bold"
           >

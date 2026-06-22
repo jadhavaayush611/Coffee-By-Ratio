@@ -150,7 +150,6 @@ interface BrewTimerProps {
 
 export default function BrewTimer({ 
   steps: customSteps, 
-  totalCoffee: initialTotalCoffee = 15,
   initialMethodId = 'v60',
   methodName
 }: BrewTimerProps) {

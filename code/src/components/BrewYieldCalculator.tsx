@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Coffee, Droplets, Scale, Info, Zap, ChevronRight } from 'lucide-react';
+import { Coffee, Droplets, Scale, Info, Zap } from 'lucide-react';
+import { calculateRatio, calculateStrengthPercentage, getExtractionStyle } from '../utils/calculations';
 
 interface BrewCategory {
   name: string;
@@ -44,27 +45,50 @@ const CATEGORIES: BrewCategory[] = [
 export default function BrewYieldCalculator() {
   const [dose, setDose] = useState<string>('18');
   const [yieldWeight, setYieldWeight] = useState<string>('36');
+  const [errors, setErrors] = useState<{ dose?: string; yieldWeight?: string }>({});
 
-  const ratio = useMemo(() => {
-    const d = parseFloat(dose);
-    const y = parseFloat(yieldWeight);
-    if (isNaN(d) || isNaN(y) || d === 0) return 0;
-    return y / d;
-  }, [dose, yieldWeight]);
-
-  const getExtractionStyle = (r: number) => {
-    if (r <= 0) return 'Invalid';
-    if (r < 1.5) return 'Ristretto (Restricted)';
-    if (r < 2.5) return 'Normale (Standard Espresso)';
-    if (r < 4) return 'Lungo (Long Espresso)';
-    if (r < 10) return 'Concentrate / Moka Pot';
-    if (r < 14) return 'Strong Filter';
-    if (r < 17) return 'Standard Filter / Balanced';
-    if (r < 20) return 'Light Filter / Weak';
-    return 'Diluted';
+  const validateField = (val: string, field: 'dose' | 'yieldWeight'): string => {
+    if (!val || val.trim() === '') {
+      return 'Value is required';
+    }
+    const num = parseFloat(val);
+    if (isNaN(num)) {
+      return 'Must be a valid number';
+    }
+    if (!isFinite(num)) {
+      return 'Must be a finite number';
+    }
+    if (num <= 0) {
+      return 'Must be greater than zero';
+    }
+    if (field === 'dose' && num < 0.1) {
+      return 'Min dose is 0.1g';
+    }
+    if (field === 'yieldWeight' && num < 0.1) {
+      return 'Min yield is 0.1g';
+    }
+    return '';
   };
 
-  const strengthPercentage = Math.max(0, Math.min(100, (1 / (ratio || 1)) * 100 * 2)); // Simplified visualization
+  const handleDoseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setDose(val);
+    setErrors(prev => ({ ...prev, dose: validateField(val, 'dose') }));
+  };
+
+  const handleYieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setYieldWeight(val);
+    setErrors(prev => ({ ...prev, yieldWeight: validateField(val, 'yieldWeight') }));
+  };
+
+  const ratio = useMemo(() => {
+    return calculateRatio(parseFloat(dose), parseFloat(yieldWeight));
+  }, [dose, yieldWeight]);
+
+  const strengthPercentage = calculateStrengthPercentage(ratio);
+
+  const hasErrors = !!(errors.dose || errors.yieldWeight);
 
   return (
     <div className="space-y-8">
@@ -84,12 +108,16 @@ export default function BrewYieldCalculator() {
             id="dose-input"
             type="number"
             step="0.1"
+            min="0.1"
             inputMode="decimal"
             value={dose}
-            onChange={(e) => setDose(e.target.value)}
-            className="w-full h-14 px-4 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold"
+            onChange={handleDoseChange}
+            className={`w-full h-14 px-4 bg-card border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold ${
+              errors.dose ? 'border-error focus:ring-error/20 focus:border-error' : 'border-border'
+            }`}
             placeholder="e.g. 18"
           />
+          {errors.dose && <p className="text-[11px] text-error font-medium mt-1">{errors.dose}</p>}
         </div>
         <div className="space-y-2">
           <label htmlFor="yield-input" className="text-[11px] font-mono uppercase tracking-widest text-muted flex items-center gap-2">
@@ -99,12 +127,16 @@ export default function BrewYieldCalculator() {
             id="yield-input"
             type="number"
             step="0.1"
+            min="0.1"
             inputMode="decimal"
             value={yieldWeight}
-            onChange={(e) => setYieldWeight(e.target.value)}
-            className="w-full h-14 px-4 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold"
+            onChange={handleYieldChange}
+            className={`w-full h-14 px-4 bg-card border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg font-bold ${
+              errors.yieldWeight ? 'border-error focus:ring-error/20 focus:border-error' : 'border-border'
+            }`}
             placeholder="e.g. 36"
           />
+          {errors.yieldWeight && <p className="text-[11px] text-error font-medium mt-1">{errors.yieldWeight}</p>}
         </div>
       </div>
 
@@ -113,13 +145,13 @@ export default function BrewYieldCalculator() {
           <div>
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted block mb-2">Brew Ratio</span>
             <div className="text-4xl font-bold text-foreground tracking-tight">
-              1:{ratio.toFixed(1).replace(/\.0$/, '')}
+              {hasErrors ? '1:-' : `1:${ratio.toFixed(1).replace(/\.0$/, '')}`}
             </div>
           </div>
           <div className="text-right">
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted block mb-2">Extraction Style</span>
             <div className="text-lg font-bold text-primary">
-              {getExtractionStyle(ratio)}
+              {hasErrors ? 'Invalid' : getExtractionStyle(ratio)}
             </div>
           </div>
         </div>
@@ -127,12 +159,14 @@ export default function BrewYieldCalculator() {
         <div className="space-y-2">
           <div className="flex justify-between text-[11px] font-mono uppercase tracking-widest text-muted">
             <span>Strength Indicator</span>
-            <span className="font-bold text-foreground">{ratio > 0 ? (ratio < 4 ? 'High Intensity' : ratio < 12 ? 'Medium' : 'Lower Intensity') : '-'}</span>
+            <span className="font-bold text-foreground">
+              {!hasErrors && ratio > 0 ? (ratio < 4 ? 'High Intensity' : ratio < 12 ? 'Medium' : 'Lower Intensity') : '-'}
+            </span>
           </div>
           <div className="h-3 w-full bg-card border border-border rounded-full overflow-hidden shadow-inner">
             <div 
               className="h-full bg-primary transition-all duration-500 ease-out shadow-sm" 
-              style={{ width: `${strengthPercentage}%` }}
+              style={{ width: `${hasErrors ? 0 : strengthPercentage}%` }}
             />
           </div>
         </div>

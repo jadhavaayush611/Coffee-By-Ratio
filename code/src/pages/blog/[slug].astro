@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntries, render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Container from '../../components/Container.astro';
 import { getReadingTime } from '../../utils/reading-time';
@@ -18,10 +18,6 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
 const readingTime = getReadingTime(post.body || '');
-
-const relatedPosts = post.data.relatedPosts 
-  ? await getEntries(post.data.relatedPosts)
-  : [];
 
 const breadcrumbs = [
   { name: 'Home', item: 'https://coffeebyratio.com' },

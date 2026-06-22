@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test": "vitest run",
     "deploy": "astro build && wrangler pages deploy dist"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "vitest": "^4.1.9",
     "wrangler": "^3.109.2"
   }
 }

@@ -15,7 +15,7 @@ const ContactForm = () => {
     }
   }, []);
 
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus("loading");
     setResult("Sending....");
