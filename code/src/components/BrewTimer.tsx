@@ -152,6 +152,7 @@ interface BrewTimerProps {
 
 export default function BrewTimer({ 
   steps: customSteps, 
+  totalCoffee,
   initialMethodId = 'v60',
   methodName,
   title = "Interactive Brew Assistant",
@@ -432,249 +433,295 @@ export default function BrewTimer({
   const remainingTotalTime = steps.slice(currentStepIndex + 1).reduce((acc, step) => acc + step.duration, 0) + timeLeft;
   const currentStep = steps[currentStepIndex] || { title: 'Brewing', duration: 60, description: 'Enjoy your brew!' };
   const progress = currentStep.duration > 0 ? ((currentStep.duration - timeLeft) / currentStep.duration) * 100 : 0;
+  const maxTargetWater = steps.reduce((max, step) => (step.targetWater && step.targetWater > max ? step.targetWater : max), 0);
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-8">
-      {/* Method Selector */}
-      {!customSteps && (
-        <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar">
-          {BREW_METHODS.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => {
-                setSelectedMethod(m);
-                // Reset timer for selected method directly
-                setIsActive(false);
-                setIsFinished(false);
-                setCurrentStepIndex(0);
-                startTimeRef.current = null;
-                pausedTimeRef.current = 0;
-                pauseStartedAtRef.current = null;
-                setTimeLeft(m.steps?.[0]?.duration || 60);
-              }}
-              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border transition-all ${
-                selectedMethod.id === m.id
-                  ? 'bg-primary text-on-primary border-primary shadow-md'
-                  : 'bg-card text-muted border-border hover:border-hairline-strong'
-              }`}
-            >
-              {m.name}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 items-start w-full">
+    <div className="w-full max-w-7xl mx-auto space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start w-full">
         {/* Left Panel */}
-        <div className="space-y-6 w-full">
-          {/* Method Info Card */}
-          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground mb-4">
-              {title}
-            </h2>
-            <p className="text-sm text-body max-w-prose leading-relaxed">
-              {description}
-            </p>
+        <div className="flex flex-col gap-6 w-full min-w-0">
+          {/* 1. Assistant Header Card */}
+          <div className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">
+                {title}
+              </h2>
+              <p className="text-sm md:text-base text-body leading-relaxed">
+                {description}
+              </p>
+            </div>
+            {!customSteps && (
+              <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar pt-2">
+                {BREW_METHODS.map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => {
+                      setSelectedMethod(m);
+                      setIsActive(false);
+                      setIsFinished(false);
+                      setCurrentStepIndex(0);
+                      startTimeRef.current = null;
+                      pausedTimeRef.current = 0;
+                      pauseStartedAtRef.current = null;
+                      setTimeLeft(m.steps?.[0]?.duration || 60);
+                    }}
+                    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border transition-all ${
+                      selectedMethod.id === m.id
+                        ? 'bg-primary text-on-primary border-primary shadow-md'
+                        : 'bg-card text-muted border-border hover:border-hairline-strong'
+                    }`}
+                  >
+                    {m.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Current Step Card */}
-          {!isFinished && (
-            <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-4">
+          {/* 2. Active Step Card */}
+          <div className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center justify-between min-w-0 w-full relative">
+            {/* Settings buttons (Sound / Notification) at top-right */}
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              <button 
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className="p-2 rounded-lg hover:bg-muted-background text-muted hover:text-foreground transition-colors"
+                aria-label={soundEnabled ? "Disable sound" : "Enable sound"}
+              >
+                {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+              </button>
+              <button 
+                onClick={requestNotificationPermission}
+                className={`p-2 rounded-lg hover:bg-muted-background transition-colors ${notificationsEnabled ? 'text-primary' : 'text-muted hover:text-foreground'}`}
+                aria-label={notificationsEnabled ? "Disable notifications" : "Enable notifications"}
+              >
+                {notificationsEnabled ? <Bell size={18} /> : <BellOff size={18} />}
+              </button>
+            </div>
+
+            <div className="flex-1 space-y-4 w-full text-center md:text-left pt-6 md:pt-0">
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-2 block">
-                  Current Step • {currentStepIndex + 1} of {steps.length}
+                  {isFinished ? 'Brew Complete' : `Step ${currentStepIndex + 1} of ${steps.length}`}
                 </span>
-                <h3 className="text-xl font-bold text-foreground mb-2">
-                  {currentStep.title}
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                  {isFinished ? 'Brew Complete!' : currentStep.title}
                 </h3>
-                <p className="text-sm text-body leading-relaxed max-w-prose">
-                  {currentStep.description}
+                <p className="text-sm md:text-base text-body leading-relaxed">
+                  {isFinished ? 'Your coffee is ready to pour and enjoy.' : currentStep.description}
                 </p>
               </div>
 
-              {currentStep.targetWater && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/5 text-primary rounded-full border border-primary/10">
-                  <span className="text-[10px] font-bold uppercase tracking-wider">
-                    Target: {currentStep.targetWater}g
+              {!isFinished && currentStep.targetWater && (
+                <div className="flex items-center justify-center md:justify-start gap-1.5 px-3 py-1 bg-primary/5 text-primary rounded-full border border-primary/10 mx-auto md:mx-0 max-w-max">
+                  <span className="text-xs font-bold uppercase tracking-wider">
+                    Target Water: {currentStep.targetWater}g
                   </span>
                 </div>
               )}
             </div>
-          )}
 
-          {/* Controls Card */}
-          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-4 block">
-              Controls
-            </span>
-            <div className="flex items-center justify-center gap-4">
-              <button 
-                onClick={prevStep}
-                disabled={currentStepIndex === 0 || isFinished}
-                className="p-4 rounded-2xl bg-card border border-border text-muted hover:text-foreground disabled:opacity-30 transition-all"
-                aria-label="Previous step"
-              >
-                <SkipBack size={24} fill="currentColor" />
-              </button>
-
-              <button 
-                onClick={isFinished ? resetTimer : toggleTimer} 
-                className="w-20 h-20 rounded-3xl bg-primary text-on-primary flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all"
-                aria-label={isFinished ? "Reset timer" : isActive ? "Pause timer" : "Start timer"}
-              >
-                {isFinished ? (
-                  <RotateCcw size={32} />
-                ) : isActive ? (
-                  <Pause size={32} fill="currentColor" />
-                ) : (
-                  <Play size={32} fill="currentColor" className="ml-1" />
-                )}
-              </button>
-
-              <button 
-                onClick={nextStep}
-                disabled={currentStepIndex === steps.length - 1 || isFinished}
-                className="p-4 rounded-2xl bg-card border border-border text-muted hover:text-foreground disabled:opacity-30 transition-all"
-                aria-label="Next step"
-              >
-                <SkipForward size={24} fill="currentColor" />
-              </button>
-            </div>
-
-            {!isFinished && (
-              <button 
-                onClick={resetTimer}
-                className="mt-6 text-[10px] font-bold uppercase tracking-[0.2em] text-muted hover:text-primary transition-colors flex items-center gap-2 mx-auto"
-              >
-                <RotateCcw size={12} aria-hidden="true" /> Reset Sequence
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Right Panel */}
-        <div className="space-y-6 min-w-0 w-full">
-          {/* Active Brew Timer Card */}
-          <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden relative w-full">
-            {/* Status Bar */}
-            <div className="px-6 py-4 bg-background border-b border-border flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <TimerIcon size={18} className="text-primary" aria-hidden="true" />
-                <span className="text-sm font-bold text-foreground">
-                  {selectedMethod?.name || 'Coffee Brew'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => setSoundEnabled(!soundEnabled)}
-                  className="p-2 rounded-lg hover:bg-muted-background text-muted transition-colors"
-                  aria-label={soundEnabled ? "Disable sound" : "Enable sound"}
-                >
-                  {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                </button>
-                <button 
-                  onClick={requestNotificationPermission}
-                  className={`p-2 rounded-lg hover:bg-muted-background transition-colors ${notificationsEnabled ? 'text-primary' : 'text-muted'}`}
-                  aria-label={notificationsEnabled ? "Disable notifications" : "Enable notifications"}
-                >
-                  {notificationsEnabled ? <Bell size={18} /> : <BellOff size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Timer Display */}
-            <div className="p-8 text-center" aria-live="polite">
+            <div className="shrink-0 flex flex-col items-center justify-center">
               {isFinished ? (
-                <div className="py-10 animate-in fade-in zoom-in duration-500">
-                  <div className="w-20 h-20 bg-link-bg-soft/30 text-success rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-link-bg-soft/20">
-                    <CheckCircle2 size={40} aria-hidden="true" />
-                  </div>
-                  <h2 className="text-2xl font-bold mb-2 text-foreground">Brew Complete!</h2>
-                  <p className="text-sm text-body mb-8">Ready to pour and enjoy.</p>
-                  <button onClick={resetTimer} className="px-8 py-3 bg-primary text-on-primary font-bold rounded-xl shadow-lg hover:translate-y-[-1px] active:translate-y-[0] transition-all">
-                    Reset Timer
-                  </button>
+                <div className="w-48 h-48 bg-success/10 text-success rounded-full flex items-center justify-center shadow-inner border border-success/20 animate-in fade-in zoom-in duration-500">
+                  <CheckCircle2 size={64} aria-hidden="true" />
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center">
-                  {/* Circular Progress */}
-                  <div className="relative w-56 h-56">
-                    <svg className="w-full h-full transform -rotate-90" aria-hidden="true">
-                      <circle
-                        cx="112"
-                        cy="112"
-                        r="104"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="transparent"
-                        className="text-muted-background"
-                      />
-                      <circle
-                        cx="112"
-                        cy="112"
-                        r="104"
-                        stroke="currentColor"
-                        strokeWidth="6"
-                        fill="transparent"
-                        strokeDasharray={653.45}
-                        strokeDashoffset={653.45 - (653.45 * progress) / 100}
-                        strokeLinecap="round"
-                        className="text-primary transition-all duration-300 ease-linear drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.3)]"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-6xl font-bold font-mono tracking-tighter text-foreground tabular-nums">
-                        {formatTime(timeLeft)}
-                      </span>
-                      <div className="mt-2 flex items-center gap-2 text-muted">
-                        <TimerIcon size={12} aria-hidden="true" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">{formatTime(remainingTotalTime)} Left</span>
-                      </div>
+                <div className="relative w-48 h-48">
+                  <svg className="w-full h-full transform -rotate-90" aria-hidden="true">
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r="80"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="transparent"
+                      className="text-muted-background"
+                    />
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r="80"
+                      stroke="currentColor"
+                      strokeWidth="6"
+                      fill="transparent"
+                      strokeDasharray={502.65}
+                      strokeDashoffset={502.65 - (502.65 * progress) / 100}
+                      strokeLinecap="round"
+                      className="text-primary transition-all duration-300 ease-linear drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.3)]"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-5xl font-bold font-mono tracking-tighter text-foreground tabular-nums">
+                      {formatTime(timeLeft)}
+                    </span>
+                    <div className="mt-1 flex items-center gap-1 text-muted">
+                      <TimerIcon size={10} aria-hidden="true" />
+                      <span className="text-[9px] font-bold uppercase tracking-widest">{formatTime(remainingTotalTime)} Left</span>
                     </div>
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Global Progress Bar */}
-            {!isFinished && (
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-muted-background">
-                <div 
-                  className="h-full bg-primary/30 transition-all duration-1000"
-                  style={{ width: `${totalBrewTime > 0 ? ((totalBrewTime - remainingTotalTime) / totalBrewTime) * 100 : 0}%` }}
-                />
-              </div>
-            )}
           </div>
 
-          {/* Timeline Steps Preview (Step Timeline) */}
-          <div className="grid grid-cols-1 gap-2 w-full">
-            {steps.map((step, idx) => (
-              <div 
-                key={idx} 
-                className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-                  idx === currentStepIndex 
-                    ? 'bg-primary/5 border-primary/20 scale-[1.02]' 
-                    : idx < currentStepIndex 
-                    ? 'bg-card opacity-40 border-border grayscale'
-                    : 'bg-card border-border'
-                }`}
+          {/* 3. Controls Card */}
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center w-full">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-4 block">
+              Controls
+            </span>
+            <div className="flex items-center justify-center gap-6">
+              {/* Reset Sequence */}
+              <button 
+                onClick={resetTimer}
+                disabled={currentStepIndex === 0 && timeLeft === (steps[0]?.duration || 60) && !isActive && !isFinished}
+                className="p-4 rounded-full bg-card border border-border text-muted hover:text-foreground hover:border-foreground/20 disabled:opacity-30 transition-all shadow-sm"
+                aria-label="Reset sequence"
+                title="Reset Sequence"
               >
-                <div className="flex items-center gap-4">
-                  <span className={`text-[10px] font-mono font-bold w-6 h-6 rounded-full flex items-center justify-center border ${
-                    idx === currentStepIndex ? 'bg-primary text-on-primary border-primary' : 'bg-muted-background text-muted border-border'
-                  }`}>
-                    {idx + 1}
-                  </span>
-                  <div>
-                    <h4 className="text-xs font-bold text-foreground">{step.title}</h4>
-                    <p className="text-[10px] text-muted">{formatTime(step.duration)} duration</p>
-                  </div>
-                </div>
-                {idx === currentStepIndex && <div className="text-primary"><ChevronRight size={16} /></div>}
-                {idx < currentStepIndex && <CheckCircle2 size={16} className="text-success" />}
+                <RotateCcw size={20} />
+              </button>
+
+              {/* Previous Step */}
+              <button 
+                onClick={prevStep}
+                disabled={currentStepIndex === 0 || isFinished}
+                className="p-4 rounded-full bg-card border border-border text-muted hover:text-foreground hover:border-foreground/20 disabled:opacity-30 transition-all shadow-sm"
+                aria-label="Previous step"
+                title="Previous Step"
+              >
+                <SkipBack size={20} fill="currentColor" />
+              </button>
+
+              {/* Play / Pause */}
+              <button 
+                onClick={isFinished ? resetTimer : toggleTimer} 
+                className="w-16 h-16 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 hover:bg-primary/90 transition-all"
+                aria-label={isFinished ? "Reset timer" : isActive ? "Pause timer" : "Start timer"}
+                title={isFinished ? "Reset Timer" : isActive ? "Pause" : "Start"}
+              >
+                {isFinished ? (
+                  <RotateCcw size={24} />
+                ) : isActive ? (
+                  <Pause size={24} fill="currentColor" />
+                ) : (
+                  <Play size={24} fill="currentColor" className="ml-1" />
+                )}
+              </button>
+
+              {/* Next Step */}
+              <button 
+                onClick={nextStep}
+                disabled={currentStepIndex === steps.length - 1 || isFinished}
+                className="p-4 rounded-full bg-card border border-border text-muted hover:text-foreground hover:border-foreground/20 disabled:opacity-30 transition-all shadow-sm"
+                aria-label="Next step"
+                title="Next Step"
+              >
+                <SkipForward size={20} fill="currentColor" />
+              </button>
+            </div>
+          </div>
+
+          {/* 4. Brew Details Card */}
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-4 block">
+              Brew Details
+            </span>
+            <div className={`grid ${totalCoffee ? 'grid-cols-4' : 'grid-cols-3'} gap-4 text-center`}>
+              <div>
+                <span className="text-xs text-muted block mb-1">Method</span>
+                <span className="text-sm font-bold text-foreground truncate block">
+                  {selectedMethod.name}
+                </span>
               </div>
-            ))}
+              {totalCoffee && (
+                <div>
+                  <span className="text-xs text-muted block mb-1">Coffee</span>
+                  <span className="text-sm font-bold text-foreground block">
+                    {totalCoffee}g
+                  </span>
+                </div>
+              )}
+              <div>
+                <span className="text-xs text-muted block mb-1">Total Water</span>
+                <span className="text-sm font-bold text-foreground block">
+                  {maxTargetWater > 0 ? `${maxTargetWater}g` : 'N/A'}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs text-muted block mb-1">Total Time</span>
+                <span className="text-sm font-bold text-foreground block">
+                  {formatTime(totalBrewTime)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Timeline Panel */}
+        <div className="w-full lg:w-[360px] shrink-0">
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm flex flex-col gap-4 w-full">
+            <div className="flex items-center justify-between border-b border-border pb-4 mb-2">
+              <h3 className="text-lg font-bold text-foreground">Brew Timeline</h3>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-muted">
+                {steps.length} Steps
+              </span>
+            </div>
+            <div className="space-y-3 w-full">
+              {steps.map((step, idx) => {
+                const isActiveStep = idx === currentStepIndex && !isFinished;
+                const isCompletedStep = idx < currentStepIndex || isFinished;
+                
+                let cardClass = "";
+                if (isActiveStep) {
+                  cardClass = "bg-primary/5 border-primary/30 shadow-md scale-[1.02] text-foreground";
+                } else if (isCompletedStep) {
+                  cardClass = "bg-card border-success/20 opacity-70 text-muted";
+                } else {
+                  cardClass = "bg-card border-border text-muted hover:border-foreground/10";
+                }
+
+                return (
+                  <div 
+                    key={idx} 
+                    className={`flex items-center justify-between p-4 rounded-2xl border shadow-sm transition-all duration-300 w-full ${cardClass}`}
+                  >
+                    <div className="flex items-center gap-4 min-w-0">
+                      <span className={`text-xs font-mono font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0 border transition-all ${
+                        isActiveStep 
+                          ? 'bg-primary text-on-primary border-primary' 
+                          : isCompletedStep
+                          ? 'bg-success/10 text-success border-success/20'
+                          : 'bg-muted-background text-muted border-border'
+                      }`}>
+                        {idx + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <h4 className={`text-sm font-bold truncate ${isActiveStep ? 'text-foreground' : 'text-foreground/80'}`}>
+                          {step.title}
+                        </h4>
+                        <p className="text-xs text-muted">
+                          {formatTime(step.duration)}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="shrink-0 ml-2">
+                      {isActiveStep && (
+                        <div className="text-primary animate-pulse">
+                          <ChevronRight size={18} />
+                        </div>
+                      )}
+                      {isCompletedStep && (
+                        <CheckCircle2 size={18} className="text-success" />
+                      )}
+                      {!isActiveStep && !isCompletedStep && (
+                        <div className="w-[18px]" />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
