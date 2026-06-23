@@ -190,8 +190,7 @@ export default function BrewTimer({
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Background-resilient state refs
-  const startTimeRef = useRef<number | null>(null); // absolute timestamp when the active period started
-  const pausedTimeRef = useRef<number>(0); // total accumulated pause duration in ms
+  const stepStartTimeRef = useRef<number | null>(null); // timestamp when the active step started (shifted by pauses)
   const pauseStartedAtRef = useRef<number | null>(null); // timestamp when the current pause started
   const currentStepIndexRef = useRef(0);
 
@@ -275,75 +274,58 @@ export default function BrewTimer({
     }
   }, [soundEnabled, notificationsEnabled, selectedMethod]);
 
-  const getElapsedMs = useCallback((now: number = Date.now()) => {
-    if (startTimeRef.current === null) return 0;
+  const getElapsedSecondsForStep = useCallback((now = Date.now()) => {
+    if (stepStartTimeRef.current === null) return 0;
     if (isActive) {
-      return (now - startTimeRef.current) - pausedTimeRef.current;
+      return Math.floor((now - stepStartTimeRef.current) / 1000);
     } else {
       const pauseStart = pauseStartedAtRef.current !== null ? pauseStartedAtRef.current : now;
-      return (pauseStart - startTimeRef.current) - pausedTimeRef.current;
+      return Math.floor((pauseStart - stepStartTimeRef.current) / 1000);
     }
   }, [isActive]);
 
-  const setElapsedTime = (offsetSeconds: number) => {
-    const now = Date.now();
-    startTimeRef.current = now - (offsetSeconds * 1000);
-    pausedTimeRef.current = 0;
-    if (!isActive) {
-      pauseStartedAtRef.current = now;
-    }
-  };
-
   const updateTimerState = useCallback((now = Date.now()) => {
-    if (!isActive || startTimeRef.current === null) return;
+    if (!isActive || stepStartTimeRef.current === null) return;
 
-    const elapsedMs = getElapsedMs(now);
-    const totalElapsedSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
-
-    let elapsed = 0;
-    let nextStepIdx = 0;
-    let nextTimeLeft = 0;
-    let finished = false;
-
+    let elapsedSeconds = getElapsedSecondsForStep(now);
     const steps = selectedMethod?.steps || [];
-    if (steps.length === 0) {
-      setCurrentStepIndex(0);
-      setTimeLeft(0);
-      setIsActive(false);
-      setIsFinished(true);
-      return;
-    }
+    let currentIdx = currentStepIndexRef.current;
 
-    for (let i = 0; i < steps.length; i++) {
-      const stepDuration = steps[i].duration;
-      if (totalElapsedSeconds < elapsed + stepDuration) {
-        nextStepIdx = i;
-        nextTimeLeft = (elapsed + stepDuration) - totalElapsedSeconds;
+    while (currentIdx < steps.length) {
+      const stepDuration = steps[currentIdx]?.duration || 60;
+      if (elapsedSeconds < stepDuration) {
+        // We are within the current step
         break;
       }
-      elapsed += stepDuration;
+
+      // Step has finished!
+      if (currentIdx < steps.length - 1) {
+        // Advance to next step
+        playNotification(currentIdx + 1);
+        
+        // Shift start time by the completed step's duration in ms
+        stepStartTimeRef.current += stepDuration * 1000;
+        currentIdx += 1;
+        
+        // Recalculate elapsed seconds for the new step
+        elapsedSeconds = getElapsedSecondsForStep(now);
+      } else {
+        // Last step completed! Finish the brew.
+        setIsActive(false);
+        setIsFinished(true);
+        playNotification(steps.length);
+        setCurrentStepIndex(steps.length - 1);
+        currentStepIndexRef.current = steps.length - 1;
+        setTimeLeft(0);
+        return;
+      }
     }
 
-    if (totalElapsedSeconds >= elapsed) {
-      nextStepIdx = steps.length - 1;
-      nextTimeLeft = 0;
-      finished = true;
-    }
-
-    // Check if we transitioned to a new step
-    if (nextStepIdx !== currentStepIndexRef.current && !finished) {
-      playNotification(nextStepIdx);
-    }
-
-    setCurrentStepIndex(nextStepIdx);
-    setTimeLeft(nextTimeLeft);
-
-    if (finished) {
-      setIsActive(false);
-      setIsFinished(true);
-      playNotification(steps.length);
-    }
-  }, [isActive, selectedMethod, getElapsedMs, playNotification]);
+    setCurrentStepIndex(currentIdx);
+    currentStepIndexRef.current = currentIdx;
+    const stepDuration = steps[currentIdx]?.duration || 60;
+    setTimeLeft(stepDuration - elapsedSeconds);
+  }, [isActive, selectedMethod, getElapsedSecondsForStep, playNotification]);
 
   // Main Timer loop & visibility change listener
   useEffect(() => {
@@ -370,15 +352,14 @@ export default function BrewTimer({
   const toggleTimer = () => {
     const now = Date.now();
     if (!isActive) {
-      if (startTimeRef.current === null) {
+      if (stepStartTimeRef.current === null) {
         // Start from beginning
-        startTimeRef.current = now;
-        pausedTimeRef.current = 0;
+        stepStartTimeRef.current = now;
         pauseStartedAtRef.current = null;
       } else if (pauseStartedAtRef.current !== null) {
         // Resume
         const pausedDuration = now - pauseStartedAtRef.current;
-        pausedTimeRef.current += pausedDuration;
+        stepStartTimeRef.current += pausedDuration;
         pauseStartedAtRef.current = null;
       }
       setIsActive(true);
@@ -393,8 +374,8 @@ export default function BrewTimer({
     setIsActive(false);
     setIsFinished(false);
     setCurrentStepIndex(0);
-    startTimeRef.current = null;
-    pausedTimeRef.current = 0;
+    currentStepIndexRef.current = 0;
+    stepStartTimeRef.current = null;
     pauseStartedAtRef.current = null;
     const steps = selectedMethod?.steps || [];
     setTimeLeft(steps[0]?.duration || 60);
@@ -404,9 +385,14 @@ export default function BrewTimer({
     const steps = selectedMethod?.steps || [];
     if (currentStepIndex < steps.length - 1) {
       const nextIdx = currentStepIndex + 1;
-      const offsetSeconds = steps.slice(0, nextIdx).reduce((acc, step) => acc + step.duration, 0);
-      setElapsedTime(offsetSeconds);
       setCurrentStepIndex(nextIdx);
+      currentStepIndexRef.current = nextIdx;
+      if (isActive) {
+        stepStartTimeRef.current = Date.now();
+      } else {
+        stepStartTimeRef.current = null;
+        pauseStartedAtRef.current = null;
+      }
       setTimeLeft(steps[nextIdx]?.duration || 60);
     }
   };
@@ -415,9 +401,14 @@ export default function BrewTimer({
     const steps = selectedMethod?.steps || [];
     if (currentStepIndex > 0) {
       const prevIdx = currentStepIndex - 1;
-      const offsetSeconds = steps.slice(0, prevIdx).reduce((acc, step) => acc + step.duration, 0);
-      setElapsedTime(offsetSeconds);
       setCurrentStepIndex(prevIdx);
+      currentStepIndexRef.current = prevIdx;
+      if (isActive) {
+        stepStartTimeRef.current = Date.now();
+      } else {
+        stepStartTimeRef.current = null;
+        pauseStartedAtRef.current = null;
+      }
       setTimeLeft(steps[prevIdx]?.duration || 60);
     }
   };
@@ -460,8 +451,7 @@ export default function BrewTimer({
                       setIsActive(false);
                       setIsFinished(false);
                       setCurrentStepIndex(0);
-                      startTimeRef.current = null;
-                      pausedTimeRef.current = 0;
+                      stepStartTimeRef.current = null;
                       pauseStartedAtRef.current = null;
                       setTimeLeft(m.steps?.[0]?.duration || 60);
                     }}
